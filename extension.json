@@ -1,0 +1,31 @@
+{
+	"name": "Diagrams",
+	"author": [
+		"Sam Wilson"
+	],
+	"url": "https://www.mediawiki.org/wiki/Extension:Diagrams",
+	"descriptionmsg": "diagrams-desc",
+	"license-name": "GPL-3.0-or-later",
+	"type": "other",
+	"requires": {
+		"MediaWiki": ">= 1.32.0"
+	},
+	"AutoloadNamespaces": {
+		"MediaWiki\\Extension\\Diagrams\\": "includes/"
+	},
+	"config": {
+		"DiagramsServiceUrl": {
+			"description": "URL of the diagram-rendering service.",
+			"value": "https://tools.wmflabs.org/diagrams/"
+		}
+	},
+	"Hooks": {
+		"ParserFirstCallInit": "MediaWiki\\Extension\\Diagrams\\Hooks::onParserFirstCallInit"
+	},
+	"MessagesDirs": {
+		"Diagrams": [
+			"i18n"
+		]
+	},
+	"manifest_version": 2
+}

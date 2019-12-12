@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Sam Wilson"
+		]
+	},
+	"diagrams-desc": "Render Graphviz, Mscgen, and PlantUML diagrams in wiki pages."
+}
