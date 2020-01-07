@@ -1,7 +1,23 @@
 {
 	"name": "samwilson/diagrams",
 	"description": "MediaWiki extension to display various types of diagrams rendered from text within wiki pages.",
-	"license": "GPL-3.0-or-later",
+	"type": "mediawiki-extension",
+	"homepage": "https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:Diagrams",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Sam Wilson",
+			"homepage": "https://samwilson.id.au/",
+			"role": "Developer"
+		}
+	],
+	"support": {
+		"issues": "https://github.com/samwilson/diagrams-extension/issues",
+		"source": "https://github.com/samwilson/diagrams-extension"
+	},
+	"require": {
+		"composer/installers": "^1.0"
+	},
 	"require-dev": {
 		"jakub-onderka/php-parallel-lint": "1.0.0",
 		"mediawiki/mediawiki-codesniffer": "28.0.0",
