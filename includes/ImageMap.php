@@ -10,12 +10,12 @@ use DOMXPath;
 use Title;
 
 /**
- * This class represents the image-map functionality of GraphViz. It is responsible for generating
- * the .map file that accompanies a graph, as well as retrieving information about this file.
+ * This class represents an HTML image-map, modifying it where required to support MediaWiki
+ * features such as links.
  */
 class ImageMap {
 
-	/** @var string The map contents as string. */
+	/** @var string The map contents as an HTML string. */
 	protected $map;
 
 	/** @var DOMDocument The map contents as a DomDocument. */

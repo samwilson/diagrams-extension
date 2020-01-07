@@ -1,6 +1,6 @@
 {
-	"name": "samwilson/diagrams-extension",
-	"description": "@TODO",
+	"name": "samwilson/diagrams",
+	"description": "MediaWiki extension to display various types of diagrams rendered from text within wiki pages.",
 	"license": "GPL-3.0-or-later",
 	"require-dev": {
 		"jakub-onderka/php-parallel-lint": "1.0.0",
