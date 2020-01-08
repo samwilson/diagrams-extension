@@ -55,11 +55,11 @@ class Hooks {
 		$baseUrl = MediaWikiServices::getInstance()->getMainConfig()->get( 'DiagramsServiceUrl' );
 		$url = trim( $baseUrl, '/' ) . '/render';
 		$params = [
-			'postData' => [
+			'postData' => http_build_query( [
 				'generator' => $generator,
-				'types' => json_encode( array_filter( [ 'png', $type ] ) ),
+				'types' => array_filter( [ 'png', $type ] ),
 				'source' => $input,
-			],
+			] ),
 		];
 		$result = Http::request( 'POST', $url, $params, __METHOD__ );
 		if ( $result === false ) {
