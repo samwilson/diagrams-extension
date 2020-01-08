@@ -4,5 +4,7 @@
 			"Sam Wilson"
 		]
 	},
-	"diagrams-desc": "Render Graphviz, Mscgen, and PlantUML diagrams in wiki pages."
+	"diagrams-desc": "Render Graphviz, Mscgen, and PlantUML diagrams in wiki pages.",
+	"diagrams-error-no-response": "Diagrams error: no response received from remote service.",
+	"diagrams-error-returned-0": "Diagrams service error:"
 }
