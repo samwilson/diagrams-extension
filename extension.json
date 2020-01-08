@@ -1,12 +1,14 @@
 {
 	"name": "Diagrams",
+	"namemsg": "diagrams-extensionname",
+	"type": "other",
 	"author": [
-		"Sam Wilson"
+		"[https://samwilson.id.au/ Sam Wilson]"
 	],
+	"version": "0.2.0",
 	"url": "https://www.mediawiki.org/wiki/Extension:Diagrams",
 	"descriptionmsg": "diagrams-desc",
 	"license-name": "GPL-3.0-or-later",
-	"type": "other",
 	"requires": {
 		"MediaWiki": ">= 1.32.0"
 	},
@@ -16,7 +18,7 @@
 	"config": {
 		"DiagramsServiceUrl": {
 			"description": "URL of the diagram-rendering service.",
-			"value": "https://tools.wmflabs.org/diagrams/"
+			"value": "https://example.org/diagrams/"
 		}
 	},
 	"Hooks": {

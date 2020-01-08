@@ -4,6 +4,7 @@
 			"Sam Wilson"
 		]
 	},
+	"diagrams-extensionname": "{{name}}",
 	"diagrams-desc": "{{desc|name=Diagrams|url=https://www.mediawiki.org/wiki/Extension:Diagrams}}",
 	"diagrams-error-no-response": "Error message displayed when no response is received from the web service.",
 	"diagrams-error-returned-0": "Error message label for errors returned by the web service."
