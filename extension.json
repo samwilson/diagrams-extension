@@ -1,9 +1,10 @@
 {
 	"name": "Diagrams",
 	"namemsg": "diagrams-extensionname",
-	"type": "other",
+	"type": "parserhook",
 	"author": [
-		"[https://samwilson.id.au/ Sam Wilson]"
+		"[https://samwilson.id.au/ Sam Wilson]",
+		"[http://www.bitplan.com/index.php/Wolfgang_Fahl Wolfgang Fahl/ProfiWiki]"
 	],
 	"version": "0.3.0",
 	"url": "https://www.mediawiki.org/wiki/Extension:Diagrams",
@@ -15,6 +16,9 @@
 	"AutoloadNamespaces": {
 		"MediaWiki\\Extension\\Diagrams\\": "includes/"
 	},
+	"SpecialPages": {
+        "Diagrams": "MediaWiki\\Extension\\Diagrams\\SpecialDiagrams"
+    },
 	"config": {
 		"DiagramsServiceUrl": {
 			"description": "URL of the diagram-rendering service.",

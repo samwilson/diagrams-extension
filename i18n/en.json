@@ -5,7 +5,9 @@
 		]
 	},
 	"diagrams-extensionname": "Diagrams",
-	"diagrams-desc": "Render Graphviz, Mscgen, and PlantUML diagrams in wiki pages.",
+	"diagrams-desc": "Render Graphviz, Mscgen, and PlantUML diagrams in wiki pages. See [[Special:Diagrams]].",
+	"diagrams-special-title": "Special:Diagrams",
+	"diagrams-wiki-desc":  "The Diagrams extension needs java, plantuml and graphviz to be installed. Below you find the results for the check of the installation.",
 	"diagrams-error-no-response": "Diagrams error: no response received from remote service.",
 	"diagrams-error-returned-0": "Diagrams service error:"
 }
