@@ -51,8 +51,39 @@ class Hooks {
 	 * @param string|null $type
 	 * @return string
 	 */
-	protected static function render( $generator, $input, $type = null ) {
+	protected static function render(string $generator, string $input,string $type = null ):string {
+	    $localService= MediaWikiServices::getInstance()->getMainConfig()->get( 'DiagramsServiceLocal' );
 		$baseUrl = MediaWikiServices::getInstance()->getMainConfig()->get( 'DiagramsServiceUrl' );
+		$result=null;
+		if (!$localService) {
+	       $result=static::renderWithService($generator,$input,$baseUrl,$type);	    
+		} else {
+		   $result=static::renderLocal($generator,$input,$type);
+		}
+		return $result;
+	}
+	
+	/**
+	 * render on the local host using command line calls
+	 * @param string $generator
+	 * @param string $input
+	 * @param string $type
+	 * @return string
+	 */
+	protected static function renderLocal(string $generator, string $input,string $type = null ):string {
+	    return static::formatError( wfMessage( 'diagrams-error-local' , 'not implemented yet') );
+	}
+	
+	
+	/**
+	 * render with the given service baseUrl
+	 * @param string $generator
+	 * @param string $input
+	 * @param string $baseUrl
+	 * @param string $type
+	 * @return unknown
+	 */
+	protected static function renderWithService(string $generator, string $input,string $baseUrl, string $type = null): string {
 		$url = trim( $baseUrl, '/' ) . '/render';
 		$params = [
 			'postData' => http_build_query( [
@@ -63,9 +94,18 @@ class Hooks {
 		];
 		$result = Http::request( 'POST', $url, $params, __METHOD__ );
 		if ( $result === false ) {
-			return static::formatError( wfMessage( 'diagrams-error-no-response' ) );
+			return static::formatError( wfMessage( 'diagrams-error-no-response' , $baseUrl) );
 		}
 		$response = json_decode( $result );
+		return static::renderResponse($reponse);
+	}
+	
+	/**
+	 * render the given response
+	 * @param mixed $response
+	 * @return string
+	 */
+	protected static function renderResponse(mixed $response):string	{
 		if ( isset( $response->error ) ) {
 			$error = wfMessage( 'diagrams-error-returned-' . $response->error );
 			if ( isset( $response->message ) ) {

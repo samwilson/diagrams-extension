@@ -23,6 +23,10 @@
 		"DiagramsServiceUrl": {
 			"description": "URL of the diagram-rendering service.",
 			"value": "https://example.org/diagrams/"
+		},
+		"DiagramsServiceLocal": {
+		    "description": "should the diagrams be rendered locally via command line calls?",
+			"value": false
 		}
 	},
 	"Hooks": {
