@@ -22,7 +22,7 @@ class SpecialDiagrams extends SpecialPage {
 	public function execute( $sub ) {
 		$out = $this->getOutput();
 		$out->setPageTitle( $this->msg( 'diagrams-special-title' ) );
-		$out->addHelpLink( 'https://www.mediawiki.org/wiki/Extension:Diagrams' );
+		$out->addHelpLink( 'Extension:Diagrams' );
 		$out->addWikiMsg( 'diagrams-wiki-desc' );
   		$this->getJavaVersion();
 		
