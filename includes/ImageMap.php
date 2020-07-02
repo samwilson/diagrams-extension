@@ -7,6 +7,7 @@ namespace MediaWiki\Extension\Diagrams;
 
 use DOMDocument;
 use DOMXPath;
+use Html;
 use Title;
 
 /**
@@ -25,7 +26,28 @@ class ImageMap {
 	 * @param string $mapHtml HTML string of the <map> element.
 	 */
 	public function __construct( $mapHtml ) {
+		if ( strpos( $mapHtml, '<map' ) === false ) {
+			$mapHtml = $this->convertToMap( $mapHtml );
+		}
 		$this->map = $mapHtml;
+	}
+
+	/**
+	 * Convert ismap format to map HTML.
+	 * @param string $ismap
+	 * @return string
+	 */
+	public function convertToMap( string $ismap ): string {
+		$areas = [];
+		foreach ( explode( "\n", $ismap ) as $line ) {
+			$parts = explode( ' ', $line );
+			$areas[] = Html::element( 'area', [
+				'shape' => array_shift( $parts ),
+				'href' => array_shift( $parts ),
+				'coords' => implode( ' ', $parts ),
+			] );
+		}
+		return Html::rawElement( 'map', [], implode( $areas ) );
 	}
 
 	/**

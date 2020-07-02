@@ -17,8 +17,8 @@
 	},
 	"config": {
 		"DiagramsServiceUrl": {
-			"description": "URL of the diagram-rendering service.",
-			"value": "https://example.org/diagrams/"
+			"description": "URL of the diagram-rendering service. If not provided, graphs will be locally rendered.",
+			"value": ""
 		}
 	},
 	"Hooks": {
