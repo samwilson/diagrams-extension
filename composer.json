@@ -16,6 +16,7 @@
 		"source": "https://github.com/samwilson/diagrams-extension"
 	},
 	"require": {
+		"ext-libxml": "*",
 		"composer/installers": "^1.0"
 	},
 	"require-dev": {
