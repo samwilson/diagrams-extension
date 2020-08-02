@@ -32,7 +32,8 @@ class Hooks {
 					: 'renderLocally';
 				if ( $tag === 'graphviz' ) {
 					// GraphViz.
-					return $diagrams->$renderMethod( $params['renderer'] ?? 'dot', $input, $params );
+					$dot = new Dot( $input );
+					return $diagrams->$renderMethod( $params['renderer'] ?? 'dot', $dot->getSrc(), $params );
 				} elseif ( $tag === 'mscgen' ) {
 					// Mscgen.
 					return $diagrams->$renderMethod( 'mscgen', $input, $params );
