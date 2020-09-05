@@ -102,23 +102,24 @@ class Diagrams {
 	}
 
 	/**
-	 * The main rendering method, handling all types.
-	 * @param string $generator
-	 * @param string $input
-	 * @param string|null $type
-	 * @return string
+	 * Render graphs via a web service.
+	 * @param string $commandName The command to render the graph with.
+	 * @param string $input The graph source.
+	 * @param array $params Parameter to the wikitext tag (caption, format, etc.).
+	 * @return string HTML to display the image and image map.
 	 */
-	public function renderWithService( $generator, $input, $type = null ) {
+	public function renderWithService( string $commandName, string $input, array $params ) {
 		$baseUrl = MediaWikiServices::getInstance()->getMainConfig()->get( 'DiagramsServiceUrl' );
 		$url = trim( $baseUrl, '/' ) . '/render';
-		$params = [
+		$format = isset( $params['format'] ) && $params['format'] ? $params['format'] : 'png';
+		$requestParams = [
 			'postData' => http_build_query( [
-				'generator' => $generator,
-				'types' => array_filter( [ 'png', $type ] ),
+				'generator' => $commandName,
+				'types' => array_filter( [ $format ] ),
 				'source' => $input,
 			] ),
 		];
-		$result = Http::request( 'POST', $url, $params, __METHOD__ );
+		$result = Http::request( 'POST', $url, $requestParams, __METHOD__ );
 		if ( $result === false ) {
 			return static::formatError( wfMessage( 'diagrams-error-no-response' ) );
 		}
@@ -130,9 +131,13 @@ class Diagrams {
 			}
 			return static::formatError( $error );
 		}
+		// Make sure the requested format was returned.
+		if ( !isset( $response->diagrams->$format->url ) ) {
+			return static::formatError( wfMessage( 'diagrams-error-bad-format', $format ) );
+		}
 		$cmapx = $response->diagrams->cmapx->contents ?? null;
 		$ismapUrl = $response->diagrams->ismap->url ?? null;
-		return $this->getHtml( $response->diagrams->png->url, $cmapx, $ismapUrl );
+		return $this->getHtml( $response->diagrams->$format->url, $cmapx, $ismapUrl );
 	}
 
 	/**

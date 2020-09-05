@@ -6,7 +6,8 @@
 	},
 	"diagrams-extensionname": "{{name}}",
 	"diagrams-desc": "{{desc|name=Diagrams|url=https://www.mediawiki.org/wiki/Extension:Diagrams}}",
-	"diagrams-error-generic": "Error message label for errors that don't have a more specific message.",
 	"diagrams-error-no-response": "Error message displayed when no response is received from the web service.",
-	"diagrams-error-returned-0": "Error message label for errors returned by the web service."
+	"diagrams-error-returned-0": "Error message label for errors returned by the web service.",
+	"diagrams-error-bad-format": "Error message label for when the web service doesn't return the requested format.",
+	"diagrams-error-generic": "Error message label for errors that don't have a more specific message."
 }
