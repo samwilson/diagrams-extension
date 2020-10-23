@@ -55,10 +55,18 @@ class Diagrams {
 			],
 		] );
 
-		$outputFormats = [
-			'image' => $params['format'] ?? 'png',
-			'map' => $commandName === 'mscgen' ? 'ismap' : 'cmapx',
-		];
+		# optionally wrap input for plantuml
+		if ( $commandName == 'plantuml') {
+			$input="@startuml\n".$input."\n@enduml";
+			$outputFormats = [
+				'image' => $params['format'] ?? 'png',
+			];
+		} else {
+			$outputFormats = [
+				'image' => $params['format'] ?? 'png',
+				'map' => $commandName === 'mscgen' ? 'ismap' : 'cmapx',
+			];
+		}
 
 		$fileName = 'Diagrams ' . md5( $input ) . '.' . $outputFormats['image'];
 		$graphFile = $diagramsRepo->findFile( $fileName );
@@ -77,14 +85,25 @@ class Diagrams {
 		$mapData = null;
 		$tmpOutFiles = [];
 		foreach ( $outputFormats as $outputType => $outputFormat ) {
-			$tmpOutFiles[$outputType] = $tmpFactory->newTempFSFile( 'diagrams_out_', $outputFormat );
+			# write input from mediawiki into temporary input file
 			file_put_contents( $tmpGraphSourceFile->getPath(), $input );
-			$cmd = Shell::command(
-				$commandName,
-				'-T', $outputFormat,
-				'-o', $tmpOutFiles[$outputType]->getPath(),
-				$tmpGraphSourceFile->getPath()
-			);
+			$inFile=$tmpGraphSourceFile->getPath();
+			if ( $commandName == 'plantuml') {
+				$cmd = Shell::command(
+					$commandName,
+					'-t.$outputFormat',
+					$inFile
+				);
+				$tmpOutFiles[$outputType]=$inFile.".".$outputFormat;
+			} else {
+				$tmpOutFiles[$outputType] = $tmpFactory->newTempFSFile( 'diagrams_out_', $outputFormat );
+				$cmd = Shell::command(
+					$commandName,
+					'-T', $outputFormat,
+					'-o', $tmpOutFiles[$outputType]->getPath(),
+					$inFile
+				);
+			}
 			$result = $cmd->execute();
 			if ( $result->getExitCode() !== 0 ) {
 				return $this->formatError( wfMessage( 'diagrams-error-generic' ) . ' ' . $result->getStderr() );
@@ -95,7 +114,10 @@ class Diagrams {
 			? $diagramsRepo->storeTemp( $fileName, $tmpOutFiles['image'] )
 			: $graphFile->publish( $tmpOutFiles['image'] );
 
-		$mapData = file_get_contents( $tmpOutFiles['map']->getPath() );
+		# mapData might not always be available
+		if (array_key_exists('map',$tmpOutFiles)) {
+			$mapData = file_get_contents( $tmpOutFiles['map']->getPath() );
+		}
 		return !$status->isGood()
 			? $this->formatError( $status->getHTML() )
 			: $this->getHtml( $graphFile->getUrl(), $mapData );
