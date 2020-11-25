@@ -6,6 +6,7 @@ use Html;
 use Http;
 use LocalRepo;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Shell\Result;
 use MediaWiki\Shell\Shell;
 
 class Diagrams {
@@ -55,10 +56,11 @@ class Diagrams {
 			],
 		] );
 
-		$outputFormats = [
-			'image' => $params['format'] ?? 'png',
-			'map' => $commandName === 'mscgen' ? 'ismap' : 'cmapx',
-		];
+		$outputFormats = [ 'image' => $params['format'] ?? 'png' ];
+		if ( $commandName !== 'plantuml' ) {
+			// Add image map output where it's supported.
+			$outputFormats['map'] = $commandName === 'mscgen' ? 'ismap' : 'cmapx';
+		}
 
 		$fileName = 'Diagrams ' . md5( $input ) . '.' . $outputFormats['image'];
 		$graphFile = $diagramsRepo->findFile( $fileName );
@@ -71,23 +73,26 @@ class Diagrams {
 		}
 
 		$tmpFactory = MediaWikiServices::getInstance()->getTempFSFileFactory();
-		$tmpGraphSourceFile = $tmpFactory->newTempFSFile( 'diagrams_in' );
+		$tmpGraphSourceFile = $tmpFactory->newTempFSFile( 'diagrams_in', $commandName );
 
 		// Render image and map files.
 		$mapData = null;
 		$tmpOutFiles = [];
 		foreach ( $outputFormats as $outputType => $outputFormat ) {
 			$tmpOutFiles[$outputType] = $tmpFactory->newTempFSFile( 'diagrams_out_', $outputFormat );
+			if ( $commandName === 'plantuml' ) {
+				$input = "@startuml\n$input\n@enduml";
+			}
 			file_put_contents( $tmpGraphSourceFile->getPath(), $input );
-			$cmd = Shell::command(
+			$result = $this->runCommand(
 				$commandName,
-				'-T', $outputFormat,
-				'-o', $tmpOutFiles[$outputType]->getPath(),
-				$tmpGraphSourceFile->getPath()
+				$outputFormat,
+				$tmpGraphSourceFile->getPath(),
+				$tmpOutFiles[$outputType]->getPath()
 			);
-			$result = $cmd->execute();
 			if ( $result->getExitCode() !== 0 ) {
-				return $this->formatError( wfMessage( 'diagrams-error-generic' ) . ' ' . $result->getStderr() );
+				$errorMessage = $result->getStderr() ?? $result->getStdout();
+				return $this->formatError( wfMessage( 'diagrams-error-generic', $commandName ) . ' ' . $errorMessage );
 			}
 		}
 
@@ -95,10 +100,28 @@ class Diagrams {
 			? $diagramsRepo->storeTemp( $fileName, $tmpOutFiles['image'] )
 			: $graphFile->publish( $tmpOutFiles['image'] );
 
-		$mapData = file_get_contents( $tmpOutFiles['map']->getPath() );
+		$mapData = isset( $tmpOutFiles['map'] ) ? file_get_contents( $tmpOutFiles['map']->getPath() ) : null;
 		return !$status->isGood()
 			? $this->formatError( $status->getHTML() )
 			: $this->getHtml( $graphFile->getUrl(), $mapData );
+	}
+
+	/**
+	 * @param string $commandName
+	 * @param string $outputFormat
+	 * @param string $inputFilename
+	 * @param string $outputFilename
+	 * @return Result
+	 */
+	private function runCommand( $commandName, $outputFormat, $inputFilename, $outputFilename ): Result {
+		if ( $commandName === 'plantuml' ) {
+			$cmdArgs = [ "-t$outputFormat", '-output', dirname( $outputFilename ), '-syntax' ];
+		} else {
+			$cmdArgs = [ '-T', $outputFormat, '-o', $outputFilename ];
+		}
+		$cmd = Shell::command( array_merge( [ $commandName ], $cmdArgs, [ $inputFilename ] ) );
+		$cmd->restrict( Shell::RESTRICT_DEFAULT | Shell::NO_NETWORK );
+		return $cmd->execute();
 	}
 
 	/**

@@ -9,5 +9,5 @@
 	"diagrams-error-no-response": "Diagrams error: no response received from remote service.",
 	"diagrams-error-returned-0": "Diagrams service error:",
 	"diagrams-error-bad-format": "Diagrams service error: format '$1' was not returned.",
-	"diagrams-error-generic": "Diagrams error:"
+	"diagrams-error-generic": "Diagrams error (with $1 command):"
 }
