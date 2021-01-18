@@ -135,10 +135,16 @@ class Diagrams {
 		$baseUrl = MediaWikiServices::getInstance()->getMainConfig()->get( 'DiagramsServiceUrl' );
 		$url = trim( $baseUrl, '/' ) . '/render';
 		$format = isset( $params['format'] ) && $params['format'] ? $params['format'] : 'png';
+		$mapFormat = null;
+		if ( $commandName !== 'plantuml' ) {
+			// Add image map output where it's supported.
+			$mapFormat = $commandName === 'mscgen' ? 'ismap' : 'cmapx';
+		}
+
 		$requestParams = [
 			'postData' => http_build_query( [
 				'generator' => $commandName,
-				'types' => array_filter( [ $format ] ),
+				'types' => array_filter( [ $format, $mapFormat ] ),
 				'source' => $input,
 			] ),
 		];

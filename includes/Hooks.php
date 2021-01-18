@@ -33,14 +33,15 @@ class Hooks {
 				if ( $tag === 'graphviz' ) {
 					// GraphViz.
 					$dot = new Dot( $input );
-					return $diagrams->$renderMethod( $params['renderer'] ?? 'dot', $dot->getSrc(), $params );
+					$html = $diagrams->$renderMethod( $params['renderer'] ?? 'dot', $dot->getSrc(), $params );
 				} elseif ( $tag === 'mscgen' ) {
 					// Mscgen.
-					return $diagrams->$renderMethod( 'mscgen', $input, $params );
+					$html = $diagrams->$renderMethod( 'mscgen', $input, $params );
 				} else {
 					// PlantUML.
-					return $diagrams->$renderMethod( 'plantuml', $input, $params );
+					$html = $diagrams->$renderMethod( 'plantuml', $input, $params );
 				}
+				return [ $html, 'markerType' => 'nowiki' ];
 			} );
 		}
 	}
