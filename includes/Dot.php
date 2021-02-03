@@ -50,7 +50,8 @@ class Dot {
 		$imageName = trim( $matches[1], '"' );
 		$file = MediaWikiServices::getInstance()->getRepoGroup()->findFile( $imageName );
 		if ( !$file || !$file->exists() ) {
-			return "label=\"Diagrams error: mage not found: $imageName\"";
+			$msg = wfMessage( 'diagrams-error-image-not-found', $imageName );
+			return 'label="' . str_replace( '"', '\"', $msg ) . '", fontcolor="red"';
 		}
 		/*
 		// Create a new tmp file to save the thumbnail to.
