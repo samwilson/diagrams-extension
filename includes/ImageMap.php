@@ -102,7 +102,7 @@ class ImageMap {
 		$xpath = new DOMXPath( $dom );
 		$hrefNodes = $xpath->query( '//*[@href]' );
 		foreach ( $hrefNodes as $hrefNode ) {
-			$newHref = preg_replace_callback( '/(\[\[?)([^\]\|]+)\|?([^\]])*\]?\]/', function ( $matches ) {
+			$newHref = preg_replace_callback( '/(\[\[?)([^\]\|]+)\|?([^\]])*\]?\]/', static function ( $matches ) {
 				if ( $matches[1] === '[[' ) {
 					// Internal link.
 					$title = Title::newFromText( $matches[2] );

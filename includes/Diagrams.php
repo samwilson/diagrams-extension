@@ -8,6 +8,7 @@ use LocalRepo;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Shell\Result;
 use MediaWiki\Shell\Shell;
+use Shellbox\Command\UnboxedResult;
 
 class Diagrams {
 
@@ -111,9 +112,9 @@ class Diagrams {
 	 * @param string $outputFormat
 	 * @param string $inputFilename
 	 * @param string $outputFilename
-	 * @return Result
+	 * @return Result|UnboxedResult
 	 */
-	private function runCommand( $commandName, $outputFormat, $inputFilename, $outputFilename ): Result {
+	private function runCommand( $commandName, $outputFormat, $inputFilename, $outputFilename ) {
 		if ( $commandName === 'plantuml' ) {
 			$cmdArgs = [ "-t$outputFormat", '-output', dirname( $outputFilename ), '-syntax' ];
 		} else {
