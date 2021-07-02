@@ -17,7 +17,7 @@ class Hooks {
 		$isPreview = $parserOptions ? $parserOptions->getIsPreview() : false;
 		$diagrams = new Diagrams( $isPreview );
 		foreach ( [ 'graphviz', 'mscgen', 'uml' ] as $tag ) {
-			$parser->setHook( $tag, function (
+			$parser->setHook( $tag, static function (
 				string $input, array $params, Parser $parser, PPFrame $frame
 			) use (
 				$tag, $diagrams

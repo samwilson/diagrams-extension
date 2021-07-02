@@ -20,10 +20,10 @@
 		"composer/installers": "^1.0"
 	},
 	"require-dev": {
-		"php-parallel-lint/php-parallel-lint": "1.2.0",
-		"mediawiki/mediawiki-codesniffer": "31.0.0",
+		"php-parallel-lint/php-parallel-lint": "1.3.0",
+		"mediawiki/mediawiki-codesniffer": "36.0.0",
 		"php-parallel-lint/php-console-highlighter": "0.5",
-		"mediawiki/minus-x": "1.1.0"
+		"mediawiki/minus-x": "1.1.1"
 	},
 	"scripts": {
 		"test": [
