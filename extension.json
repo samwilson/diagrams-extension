@@ -19,6 +19,10 @@
 		"DiagramsServiceUrl": {
 			"description": "URL of the diagram-rendering service. If not provided, graphs will be locally rendered.",
 			"value": ""
+		},
+		"DiagramsUseLocalRepo": {
+			"description": "Use the default local repo rather than the one created by this extension",
+			"value": false
 		}
 	},
 	"Hooks": {
