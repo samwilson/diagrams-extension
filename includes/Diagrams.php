@@ -40,7 +40,7 @@ class Diagrams {
 	public function renderLocally( string $commandName, string $input, array $params ) {
 		$useLocalRepo = MediaWikiServices::getInstance()->getMainConfig()->get( 'DiagramsUseLocalRepo' );
 		$localRepo = MediaWikiServices::getInstance()->getRepoGroup()->getLocalRepo();
-		$diagramsRepo = $useLocalRepo? $localRepo: new LocalRepo( [
+		$diagramsRepo = $useLocalRepo ? $localRepo : new LocalRepo( [
 			'class' => 'LocalRepo',
 			'name' => 'local',
 			'backend' => $localRepo->getBackend(),
