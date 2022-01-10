@@ -116,7 +116,7 @@ class Diagrams {
 	 */
 	private function runCommand( $commandName, $outputFormat, $inputFilename, $outputFilename ) {
 		if ( $commandName === 'plantuml' ) {
-			$cmdArgs = [ "-t$outputFormat", '-output', dirname( $outputFilename ), '-syntax' ];
+			$cmdArgs = [ "-t$outputFormat", '-output', dirname( $outputFilename ) ];
 		} else {
 			$cmdArgs = [ '-T', $outputFormat, '-o', $outputFilename ];
 		}
