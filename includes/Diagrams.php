@@ -9,6 +9,7 @@ use MediaWiki\MediaWikiServices;
 use MediaWiki\Shell\Result;
 use MediaWiki\Shell\Shell;
 use Shellbox\Command\UnboxedResult;
+use TempFSFile;
 
 class Diagrams {
 
@@ -80,9 +81,15 @@ class Diagrams {
 		$mapData = null;
 		$tmpOutFiles = [];
 		foreach ( $outputFormats as $outputType => $outputFormat ) {
-			$tmpOutFiles[$outputType] = $tmpFactory->newTempFSFile( 'diagrams_out_', $outputFormat );
 			if ( $commandName === 'plantuml' ) {
+				// Determine plantuml output file via input file because we can only
+				// specify the output directory and not a specific file.
+				$info = pathinfo( $tmpGraphSourceFile->getPath() );
+				$outputPath = $info['dirname'] . '/' . $info['filename'] . '.' . $outputFormat;
+				$tmpOutFiles[$outputType] = new TempFSFile( $outputPath );
 				$input = "@startuml\n$input\n@enduml";
+			} else {
+				$tmpOutFiles[$outputType] = $tmpFactory->newTempFSFile( 'diagrams_out_', $outputFormat );
 			}
 			file_put_contents( $tmpGraphSourceFile->getPath(), $input );
 			$result = $this->runCommand(
@@ -116,7 +123,7 @@ class Diagrams {
 	 */
 	private function runCommand( $commandName, $outputFormat, $inputFilename, $outputFilename ) {
 		if ( $commandName === 'plantuml' ) {
-			$cmdArgs = [ "-t$outputFormat", '-output', dirname( $outputFilename ), '-syntax' ];
+			$cmdArgs = [ "-t$outputFormat", '-output', dirname( $outputFilename ) ];
 		} else {
 			$cmdArgs = [ '-T', $outputFormat, '-o', $outputFilename ];
 		}
