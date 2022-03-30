@@ -204,7 +204,7 @@ class Diagrams {
 		} elseif ( $ismapUrl ) {
 			// Image maps in imap format.
 			$imgAttrs['ismap'] = true;
-			$this->hookContainer->run( 'DiagramsBeforeProduceHTMLHook' , [ $file, &$imgAttrs ]);
+			$this->hookContainer->run( 'DiagramsBeforeProduceHTML' , [ $file, &$imgAttrs ]);
 			$out = Html::rawElement(
 				'a',
 				[ 'href' => $ismapUrl ],
@@ -212,7 +212,7 @@ class Diagrams {
 			);
 		} else {
 			// No image map.
-			$this->hookContainer->run( 'DiagramsBeforeProduceHTMLHook' , [ $file, &$imgAttrs ]);
+			$this->hookContainer->run( 'DiagramsBeforeProduceHTML' , [ $file, &$imgAttrs ]);
 			$out = Html::element( 'img', $imgAttrs );
 		}
 		return Html::rawElement( 'div', [ 'class' => 'ext-diagrams' ], $out );
