@@ -7,6 +7,7 @@ use Http;
 use LocalRepo;
 use File;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\HookContainer\HookContainer;
 use MediaWiki\Shell\Result;
 use MediaWiki\Shell\Shell;
 use Shellbox\Command\UnboxedResult;
@@ -16,11 +17,15 @@ class Diagrams {
 	/** @var bool */
 	private $isPreview;
 
+	/** @var HookContainer */
+	private $hookContainer;
+
 	/**
 	 * @param bool $isPreview
 	 */
 	public function __construct( bool $isPreview ) {
 		$this->isPreview = $isPreview;
+		$this->hookContainer = MediaWikiServices::getInstance()->getHookContainer();
 	}
 
 	/**
@@ -199,7 +204,7 @@ class Diagrams {
 		} elseif ( $ismapUrl ) {
 			// Image maps in imap format.
 			$imgAttrs['ismap'] = true;
-			Hooks::run( 'DiagramsBeforeProduceHTMLHook' , [ $file, &$imgAttrs ]);
+			$this->hookContainer->run( 'DiagramsBeforeProduceHTMLHook' , [ $file, &$imgAttrs ]);
 			$out = Html::rawElement(
 				'a',
 				[ 'href' => $ismapUrl ],
@@ -207,7 +212,7 @@ class Diagrams {
 			);
 		} else {
 			// No image map.
-			Hooks::run( 'DiagramsBeforeProduceHTMLHook' , [ $file, &$imgAttrs ]);
+			$this->hookContainer->run( 'DiagramsBeforeProduceHTMLHook' , [ $file, &$imgAttrs ]);
 			$out = Html::element( 'img', $imgAttrs );
 		}
 		return Html::rawElement( 'div', [ 'class' => 'ext-diagrams' ], $out );
