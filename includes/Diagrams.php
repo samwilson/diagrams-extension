@@ -197,6 +197,7 @@ class Diagrams {
 			if ( $imageMap->hasAreas() ) {
 				$imgAttrs['usemap'] = '#' . $imageMap->getName();
 			}
+			$this->hookContainer->run( 'DiagramsBeforeProduceHTML' , [ $file, &$imgAttrs ]);
 			$out = Html::element( 'img', $imgAttrs );
 			if ( $imageMap->hasAreas() ) {
 				$out .= $imageMap->getMap();
