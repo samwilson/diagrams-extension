@@ -5,6 +5,7 @@ namespace MediaWiki\Extension\Diagrams;
 use Html;
 use Http;
 use LocalRepo;
+use File;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Shell\Result;
 use MediaWiki\Shell\Shell;
@@ -57,7 +58,6 @@ class Diagrams {
 				],
 			],
 		] );
-
 		$outputFormats = [ 'image' => $params['format'] ?? 'png' ];
 		if ( $commandName !== 'plantuml' ) {
 			// Add image map output where it's supported.
@@ -71,7 +71,7 @@ class Diagrams {
 		}
 
 		if ( $graphFile->exists() ) {
-			return $this->getHtml( $graphFile );
+			return $this->getHtml( $graphFile->getUrl(), $graphFile );
 		}
 
 		$tmpFactory = MediaWikiServices::getInstance()->getTempFSFileFactory();
@@ -105,7 +105,7 @@ class Diagrams {
 		$mapData = isset( $tmpOutFiles['map'] ) ? file_get_contents( $tmpOutFiles['map']->getPath() ) : null;
 		return !$status->isGood()
 			? $this->formatError( $status->getHTML() )
-			: $this->getHtml( $graphFile->getUrl(), $mapData );
+			: $this->getHtml( $graphFile->getUrl(), $graphFile, $mapData );
 	}
 
 	/**
@@ -168,7 +168,7 @@ class Diagrams {
 		}
 		$cmapx = $response->diagrams->cmapx->contents ?? null;
 		$ismapUrl = $response->diagrams->ismap->url ?? null;
-		return $this->getHtml( $response->diagrams->$format->url, $cmapx, $ismapUrl );
+		return $this->getHtml( $response->diagrams->$format->url, null, $cmapx, $ismapUrl );
 	}
 
 	/**
@@ -181,6 +181,7 @@ class Diagrams {
 	 */
 	private function getHtml(
 		string $imgUrl,
+		File $file = null,
 		string $mapData = null,
 		string $ismapUrl = null
 	): string {
@@ -198,6 +199,7 @@ class Diagrams {
 		} elseif ( $ismapUrl ) {
 			// Image maps in imap format.
 			$imgAttrs['ismap'] = true;
+			Hooks::run( 'DiagramsImageAttrsBeforeRenderHTML' , [ $file, &$imgAttrs ]);
 			$out = Html::rawElement(
 				'a',
 				[ 'href' => $ismapUrl ],
@@ -205,6 +207,7 @@ class Diagrams {
 			);
 		} else {
 			// No image map.
+			Hooks::run( 'DiagramsImageAttrsBeforeRenderHTML' , [ $file, &$imgAttrs ]);
 			$out = Html::element( 'img', $imgAttrs );
 		}
 		return Html::rawElement( 'div', [ 'class' => 'ext-diagrams' ], $out );
