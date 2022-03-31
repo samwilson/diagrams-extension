@@ -1,10 +1,11 @@
 /* eslint-env node, es6 */
 module.exports = function ( grunt ) {
-	var conf = grunt.file.readJSON( 'extension.json' );
+	const conf = grunt.file.readJSON( 'extension.json' );
 
 	grunt.loadNpmTasks( 'grunt-banana-checker' );
 	grunt.loadNpmTasks( 'grunt-eslint' );
 	grunt.loadNpmTasks( 'grunt-stylelint' );
+	grunt.loadNpmTasks( 'grunt-contrib-copy' );
 
 	grunt.initConfig( {
 		eslint: {
@@ -22,9 +23,21 @@ module.exports = function ( grunt ) {
 				'!vendor/**'
 			]
 		},
-		banana: conf.MessagesDirs
+		banana: conf.MessagesDirs,
+		copy: {
+			main: {
+				files: [
+					{
+						src: [ 'node_modules/mermaid/dist/mermaid.min.js' ],
+						dest: 'resources/mermaid/mermaid.min.js',
+						flatten: true
+					}
+				]
+			}
+		}
 	} );
 
+	grunt.registerTask( 'build', [ 'copy' ] );
 	grunt.registerTask( 'test', [ 'eslint', 'stylelint', 'banana' ] );
 	grunt.registerTask( 'default', 'test' );
 };

@@ -10,7 +10,7 @@
 	"descriptionmsg": "diagrams-desc",
 	"license-name": "GPL-3.0-or-later",
 	"requires": {
-		"MediaWiki": ">= 1.34.0, <= 1.38"
+		"MediaWiki": ">= 1.34.0, <= 1.39"
 	},
 	"AutoloadNamespaces": {
 		"MediaWiki\\Extension\\Diagrams\\": "includes/"
@@ -28,6 +28,18 @@
 		"Diagrams": [
 			"i18n"
 		]
+	},
+	"ResourceModules": {
+		"ext.diagrams.mermaid": {
+			"packageFiles": [
+				"resources/mermaid/diagrams.js",
+				"resources/mermaid/mermaid.min.js"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "",
+		"remoteExtPath": "Diagrams"
 	},
 	"manifest_version": 2
 }
