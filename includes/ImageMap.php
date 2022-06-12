@@ -89,9 +89,7 @@ class ImageMap {
 
 		// Load its DOM.
 		$dom = new DOMDocument();
-		$oldValue = libxml_disable_entity_loader( true );
 		$dom->loadXML( $this->map );
-		libxml_disable_entity_loader( $oldValue );
 
 		// Set a more specific ID and name (the name is referenced by the image element).
 		$id = 'ext-diagrams-' . $dom->documentElement->getAttribute( 'id' );
