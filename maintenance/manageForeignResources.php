@@ -9,12 +9,8 @@ use Maintenance;
 foreach ( stream_get_wrappers() as $wrapper ) {
 	stream_wrapper_unregister( $wrapper );
 }
-// Needed by the Guzzle library for some reason
-stream_wrapper_restore( 'php' );
-// Needed by ForeignResourceManager to unpack TAR files
-stream_wrapper_restore( 'phar' );
-
 stream_wrapper_restore( 'file' );
+
 $basePath = getenv( 'MW_INSTALL_PATH' );
 if ( $basePath ) {
 	if ( !is_dir( $basePath )
@@ -40,6 +36,7 @@ class ManageForeignResources extends Maintenance {
 			__DIR__ . '/../resources/foreign-resources.yaml',
 			__DIR__ . '/../resources/foreign'
 		);
+		// @TODO Make it possible to run `verify`.
 		return $frm->run( 'update', 'all' );
 	}
 }
