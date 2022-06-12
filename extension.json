@@ -32,8 +32,8 @@
 	"ResourceModules": {
 		"ext.diagrams.mermaid": {
 			"packageFiles": [
-				"resources/mermaid/diagrams.js",
-				"resources/mermaid/mermaid.min.js"
+				"resources/mermaid.js",
+				"resources/foreign/mermaid/mermaid.min.js"
 			]
 		}
 	},

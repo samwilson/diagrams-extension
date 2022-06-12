@@ -2,6 +2,6 @@
 <ruleset>
 	<rule ref="./vendor/mediawiki/mediawiki-codesniffer/MediaWiki" />
 	<file>.</file>
-	<exclude-pattern>resources/mermaid/mermaid.min.js</exclude-pattern>
+	<exclude-pattern>resources/foreign/mermaid/mermaid.min.js</exclude-pattern>
 	<exclude-pattern>vendor</exclude-pattern>
 </ruleset>

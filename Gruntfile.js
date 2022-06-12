@@ -5,7 +5,6 @@ module.exports = function ( grunt ) {
 	grunt.loadNpmTasks( 'grunt-banana-checker' );
 	grunt.loadNpmTasks( 'grunt-eslint' );
 	grunt.loadNpmTasks( 'grunt-stylelint' );
-	grunt.loadNpmTasks( 'grunt-contrib-copy' );
 
 	grunt.initConfig( {
 		eslint: {
@@ -23,21 +22,9 @@ module.exports = function ( grunt ) {
 				'!vendor/**'
 			]
 		},
-		banana: conf.MessagesDirs,
-		copy: {
-			main: {
-				files: [
-					{
-						src: [ 'node_modules/mermaid/dist/mermaid.min.js' ],
-						dest: 'resources/mermaid/mermaid.min.js',
-						flatten: true
-					}
-				]
-			}
-		}
+		banana: conf.MessagesDirs
 	} );
 
-	grunt.registerTask( 'build', [ 'copy' ] );
 	grunt.registerTask( 'test', [ 'eslint', 'stylelint', 'banana' ] );
 	grunt.registerTask( 'default', 'test' );
 };

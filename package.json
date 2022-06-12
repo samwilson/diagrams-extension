@@ -1,7 +1,6 @@
 {
 	"private": true,
 	"scripts": {
-		"build": "grunt build",
 		"test": "grunt test"
 	},
 	"devDependencies": {
@@ -10,11 +9,10 @@
 		"grunt-banana-checker": "0.9.0",
 		"grunt-eslint": "23.0.0",
 		"grunt-stylelint": "0.16.0",
-		"stylelint-config-wikimedia": "0.11.1",
-		"mermaid": "8.13.10"
+		"stylelint-config-wikimedia": "0.11.1"
 	},
 	"eslintIgnore": [
 		"vendor/**",
-		"resources/mermaid/mermaid.min.js"
+		"resources/foreign/**"
 	]
 }

@@ -1,5 +1,5 @@
 ( function () {
-	const mermaid = require( './mermaid.min.js' );
+	const mermaid = require( './foreign/mermaid/mermaid.min.js' );
 
 	mermaid.mermaidAPI.initialize( { startOnLoad: false } );
 
