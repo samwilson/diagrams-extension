@@ -12,6 +12,7 @@
 		"stylelint-config-wikimedia": "0.11.1"
 	},
 	"eslintIgnore": [
-		"vendor/**"
+		"vendor/**",
+		"resources/foreign/**"
 	]
 }

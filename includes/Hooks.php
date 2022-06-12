@@ -2,6 +2,7 @@
 
 namespace MediaWiki\Extension\Diagrams;
 
+use Html;
 use MediaWiki\MediaWikiServices;
 use Parser;
 use PPFrame;
@@ -16,7 +17,7 @@ class Hooks {
 		$parserOptions = $parser->getOptions();
 		$isPreview = $parserOptions ? $parserOptions->getIsPreview() : false;
 		$diagrams = new Diagrams( $isPreview );
-		foreach ( [ 'graphviz', 'mscgen', 'uml' ] as $tag ) {
+		foreach ( [ 'graphviz', 'mscgen', 'uml', 'mermaid' ] as $tag ) {
 			$parser->setHook( $tag, static function (
 				string $input, array $params, Parser $parser, PPFrame $frame
 			) use (
@@ -37,6 +38,14 @@ class Hooks {
 				} elseif ( $tag === 'mscgen' ) {
 					// Mscgen.
 					$html = $diagrams->$renderMethod( 'mscgen', $input, $params );
+				} elseif ( $tag === 'mermaid' ) {
+					// Mermaid.
+					$html = Html::rawElement(
+						'div',
+						[ 'class' => 'ext-diagrams-mermaid' ],
+						Html::element( 'div', [ 'style' => 'display:none' ], "\n$input\n" )
+					);
+					$parser->getOutput()->addModules( [ 'ext.diagrams.mermaid' ] );
 				} else {
 					// PlantUML.
 					$html = $diagrams->$renderMethod( 'plantuml', $input, $params );

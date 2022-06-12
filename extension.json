@@ -29,5 +29,17 @@
 			"i18n"
 		]
 	},
+	"ResourceModules": {
+		"ext.diagrams.mermaid": {
+			"packageFiles": [
+				"resources/mermaid.js",
+				"resources/foreign/mermaid/mermaid.min.js"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "",
+		"remoteExtPath": "Diagrams"
+	},
 	"manifest_version": 2
 }
