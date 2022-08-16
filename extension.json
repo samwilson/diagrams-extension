@@ -22,7 +22,15 @@
 		}
 	},
 	"Hooks": {
-		"ParserFirstCallInit": "MediaWiki\\Extension\\Diagrams\\Hooks::onParserFirstCallInit"
+		"ParserFirstCallInit": "main"
+	},
+	"HookHandlers": {
+		"main": {
+			"class": "MediaWiki\\Extension\\Diagrams\\Hooks",
+			"services": [
+				"MainConfig"
+			]
+		}
 	},
 	"MessagesDirs": {
 		"Diagrams": [
