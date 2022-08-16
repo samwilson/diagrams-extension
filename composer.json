@@ -17,12 +17,12 @@
 	},
 	"require": {
 		"ext-libxml": "*",
-		"composer/installers": "^1.0"
+		"composer/installers": "^1.0|^2.0"
 	},
 	"require-dev": {
-		"php-parallel-lint/php-parallel-lint": "1.3.1",
-		"mediawiki/mediawiki-codesniffer": "38.0.0",
-		"php-parallel-lint/php-console-highlighter": "0.5",
+		"php-parallel-lint/php-parallel-lint": "1.3.2",
+		"mediawiki/mediawiki-codesniffer": "39.0.0",
+		"php-parallel-lint/php-console-highlighter": "1.0.0",
 		"mediawiki/minus-x": "1.1.1"
 	},
 	"scripts": {
@@ -32,5 +32,10 @@
 			"phpcs -p -s",
 			"minus-x check ."
 		]
+	},
+	"config": {
+		"allow-plugins": {
+			"composer/installers": true
+		}
 	}
 }
