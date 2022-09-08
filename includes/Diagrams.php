@@ -5,7 +5,9 @@ namespace MediaWiki\Extension\Diagrams;
 use Html;
 use Http;
 use LocalRepo;
+use File;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\HookContainer\HookContainer;
 use MediaWiki\Shell\Result;
 use MediaWiki\Shell\Shell;
 use Shellbox\Command\UnboxedResult;
@@ -16,11 +18,15 @@ class Diagrams {
 	/** @var bool */
 	private $isPreview;
 
+	/** @var HookContainer */
+	private $hookContainer;
+
 	/**
 	 * @param bool $isPreview
 	 */
 	public function __construct( bool $isPreview ) {
 		$this->isPreview = $isPreview;
+		$this->hookContainer = MediaWikiServices::getInstance()->getHookContainer();
 	}
 
 	/**
@@ -39,8 +45,9 @@ class Diagrams {
 	 * @return string HTML to display the image and image map.
 	 */
 	public function renderLocally( string $commandName, string $input, array $params ) {
+		$useLocalRepo = MediaWikiServices::getInstance()->getMainConfig()->get( 'DiagramsUseLocalRepo' );
 		$localRepo = MediaWikiServices::getInstance()->getRepoGroup()->getLocalRepo();
-		$diagramsRepo = new LocalRepo( [
+		$diagramsRepo = $useLocalRepo ? $localRepo : new LocalRepo( [
 			'class' => 'LocalRepo',
 			'name' => 'local',
 			'backend' => $localRepo->getBackend(),
@@ -57,7 +64,6 @@ class Diagrams {
 				],
 			],
 		] );
-
 		$outputFormats = [ 'image' => $params['format'] ?? 'png' ];
 		if ( $commandName !== 'plantuml' ) {
 			// Add image map output where it's supported.
@@ -71,7 +77,7 @@ class Diagrams {
 		}
 
 		if ( $graphFile->exists() ) {
-			return $this->getHtml( $graphFile );
+			return $this->getHtml( $graphFile->getUrl(), $graphFile );
 		}
 
 		$tmpFactory = MediaWikiServices::getInstance()->getTempFSFileFactory();
@@ -111,7 +117,7 @@ class Diagrams {
 		$mapData = isset( $tmpOutFiles['map'] ) ? file_get_contents( $tmpOutFiles['map']->getPath() ) : null;
 		return !$status->isGood()
 			? $this->formatError( $status->getHTML() )
-			: $this->getHtml( $graphFile->getUrl(), $mapData );
+			: $this->getHtml( $graphFile->getUrl(), $graphFile, $mapData );
 	}
 
 	/**
@@ -174,7 +180,7 @@ class Diagrams {
 		}
 		$cmapx = $response->diagrams->cmapx->contents ?? null;
 		$ismapUrl = $response->diagrams->ismap->url ?? null;
-		return $this->getHtml( $response->diagrams->$format->url, $cmapx, $ismapUrl );
+		return $this->getHtml( $response->diagrams->$format->url, null, $cmapx, $ismapUrl );
 	}
 
 	/**
@@ -187,6 +193,7 @@ class Diagrams {
 	 */
 	private function getHtml(
 		string $imgUrl,
+		File $file = null,
 		string $mapData = null,
 		string $ismapUrl = null
 	): string {
@@ -197,6 +204,7 @@ class Diagrams {
 			if ( $imageMap->hasAreas() ) {
 				$imgAttrs['usemap'] = '#' . $imageMap->getName();
 			}
+			$this->hookContainer->run( 'DiagramsBeforeProduceHTML' , [ $file, &$imgAttrs ]);
 			$out = Html::element( 'img', $imgAttrs );
 			if ( $imageMap->hasAreas() ) {
 				$out .= $imageMap->getMap();
@@ -204,6 +212,7 @@ class Diagrams {
 		} elseif ( $ismapUrl ) {
 			// Image maps in imap format.
 			$imgAttrs['ismap'] = true;
+			$this->hookContainer->run( 'DiagramsBeforeProduceHTML' , [ $file, &$imgAttrs ]);
 			$out = Html::rawElement(
 				'a',
 				[ 'href' => $ismapUrl ],
@@ -211,6 +220,7 @@ class Diagrams {
 			);
 		} else {
 			// No image map.
+			$this->hookContainer->run( 'DiagramsBeforeProduceHTML' , [ $file, &$imgAttrs ]);
 			$out = Html::element( 'img', $imgAttrs );
 		}
 		return Html::rawElement( 'div', [ 'class' => 'ext-diagrams' ], $out );
