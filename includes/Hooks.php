@@ -31,6 +31,10 @@ class Hooks implements ParserFirstCallInitHook {
 		$renderMethod = $this->config->get( 'DiagramsServiceUrl' )
 			? 'renderWithService'
 			: 'renderLocally';
+		if ( $this->config->get( 'DiagramsUseKroki' ) ) {
+			// for backward compatibility, this configuration option is optional
+			$renderMethod = 'renderWithKroki';
+		}
 		foreach ( [ 'graphviz', 'mscgen', 'uml', 'mermaid' ] as $tag ) {
 			$parser->setHook( $tag, static function (
 				string $input, array $params, Parser $parser, PPFrame $frame
