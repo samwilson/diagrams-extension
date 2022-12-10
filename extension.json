@@ -3,7 +3,8 @@
 	"namemsg": "diagrams-extensionname",
 	"type": "other",
 	"author": [
-		"[https://samwilson.id.au/ Sam Wilson]"
+		"[https://samwilson.id.au/ Sam Wilson]",
+		"[https://www.mediawiki.org/wiki/User:YOUR1 Youri van den Bogert]"
 	],
 	"version": "0.9.4",
 	"url": "https://www.mediawiki.org/wiki/Extension:Diagrams",

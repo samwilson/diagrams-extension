@@ -13,16 +13,6 @@ use TempFSFile;
 
 class Diagrams {
 
-	/** @var bool */
-	private $isPreview;
-
-	/**
-	 * @param bool $isPreview
-	 */
-	public function __construct( bool $isPreview ) {
-		$this->isPreview = $isPreview;
-	}
-
 	/**
 	 * Get HTML for an error message.
 	 * @param string $error Error message. May contain HTML.
@@ -104,7 +94,7 @@ class Diagrams {
 			}
 		}
 
-		$status = $this->isPreview
+		$status = MediaWikiServices::getInstance()->getParser()->getOptions()->getIsPreview()
 			? $diagramsRepo->storeTemp( $fileName, $tmpOutFiles['image'] )
 			: $graphFile->publish( $tmpOutFiles['image'] );
 

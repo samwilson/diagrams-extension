@@ -25,9 +25,7 @@ class Hooks implements ParserFirstCallInitHook {
 	 * @param Parser $parser
 	 */
 	public function onParserFirstCallInit( $parser ) {
-		$parserOptions = $parser->getOptions();
-		$isPreview = $parserOptions ? $parserOptions->getIsPreview() : false;
-		$diagrams = new Diagrams( $isPreview );
+		$diagrams = new Diagrams();
 		$renderMethod = $this->config->get( 'DiagramsServiceUrl' )
 			? 'renderWithService'
 			: 'renderLocally';
