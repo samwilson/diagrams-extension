@@ -94,7 +94,8 @@ class Diagrams {
 			}
 		}
 
-		$status = MediaWikiServices::getInstance()->getParser()->getOptions()->getIsPreview()
+		$parserOptions = MediaWikiServices::getInstance()->getParser()->getOptions();
+		$status = $parserOptions !== null && $parserOptions->getIsPreview()
 			? $diagramsRepo->storeTemp( $fileName, $tmpOutFiles['image'] )
 			: $graphFile->publish( $tmpOutFiles['image'] );
 
