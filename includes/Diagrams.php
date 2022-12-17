@@ -2,25 +2,25 @@
 
 namespace MediaWiki\Extension\Diagrams;
 
+use FileRepo;
 use Html;
 use Http;
 use LocalRepo;
 use MediaWiki\MediaWikiServices;
-use MediaWiki\Shell\Result;
-use MediaWiki\Shell\Shell;
-use Shellbox\Command\UnboxedResult;
+use MediaWiki\Shell\CommandFactory;
+use Parser;
 use TempFSFile;
 
 class Diagrams {
 
-	/** @var bool */
-	private $isPreview;
+	/** @var CommandFactory */
+	private $commandFactory;
 
 	/**
-	 * @param bool $isPreview
+	 * @param CommandFactory $commandFactory
 	 */
-	public function __construct( bool $isPreview ) {
-		$this->isPreview = $isPreview;
+	public function __construct( CommandFactory $commandFactory ) {
+		$this->commandFactory = $commandFactory;
 	}
 
 	/**
@@ -64,14 +64,15 @@ class Diagrams {
 			$outputFormats['map'] = $commandName === 'mscgen' ? 'ismap' : 'cmapx';
 		}
 
-		$fileName = 'Diagrams ' . md5( $input ) . '.' . $outputFormats['image'];
+		$fileName = 'Diagrams_' . sha1( $input ) . '.' . $outputFormats['image'];
 		$graphFile = $diagramsRepo->findFile( $fileName );
-		if ( !$graphFile ) {
+		if ( $graphFile === false ) {
 			$graphFile = $diagramsRepo->newFile( $fileName );
 		}
 
-		if ( $graphFile->exists() ) {
-			return $this->getHtml( $graphFile );
+		$repoFilepath = $diagramsRepo->getZonePath( 'public' ) . '/' . $fileName;
+		if ( $diagramsRepo->fileExists( $repoFilepath ) ) {
+			return $this->getHtml( $graphFile->getUrl() );
 		}
 
 		$tmpFactory = MediaWikiServices::getInstance()->getTempFSFileFactory();
@@ -104,13 +105,11 @@ class Diagrams {
 			}
 		}
 
-		$status = $this->isPreview
-			? $diagramsRepo->storeTemp( $fileName, $tmpOutFiles['image'] )
-			: $graphFile->publish( $tmpOutFiles['image'] );
+		$status = $diagramsRepo->store( $tmpOutFiles['image'], 'public', $fileName, FileRepo::OVERWRITE );
 
 		$mapData = isset( $tmpOutFiles['map'] ) ? file_get_contents( $tmpOutFiles['map']->getPath() ) : null;
 		return !$status->isGood()
-			? $this->formatError( $status->getHTML() )
+			? $this->formatError( Parser::stripOuterParagraph( $status->getHTML() ) )
 			: $this->getHtml( $graphFile->getUrl(), $mapData );
 	}
 
@@ -119,7 +118,7 @@ class Diagrams {
 	 * @param string $outputFormat
 	 * @param string $inputFilename
 	 * @param string $outputFilename
-	 * @return Result|UnboxedResult
+	 * @return BoxedResult
 	 */
 	private function runCommand( $commandName, $outputFormat, $inputFilename, $outputFilename ) {
 		if ( $commandName === 'plantuml' ) {
@@ -127,9 +126,13 @@ class Diagrams {
 		} else {
 			$cmdArgs = [ '-T', $outputFormat, '-o', $outputFilename ];
 		}
-		$cmd = Shell::command( array_merge( [ $commandName ], $cmdArgs, [ $inputFilename ] ) );
-		$cmd->restrict( Shell::RESTRICT_DEFAULT | Shell::NO_NETWORK );
-		return $cmd->execute();
+		return $this->commandFactory
+			->createBoxed( 'diagrams' )
+			->disableNetwork()
+			->firejailDefaultSeccomp()
+			->routeName( 'diagrams-' . $commandName )
+			->params( array_merge( [ $commandName ], $cmdArgs, [ $inputFilename ] ) )
+			->execute();
 	}
 
 	/**
