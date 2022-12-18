@@ -7,6 +7,7 @@ use Http;
 use LocalRepo;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Shell\CommandFactory;
+use Parser;
 use Shellbox\Command\BoxedResult;
 use TempFSFile;
 
@@ -65,14 +66,15 @@ class Diagrams {
 			$outputFormats['map'] = $commandName === 'mscgen' ? 'ismap' : 'cmapx';
 		}
 
-		$fileName = 'Diagrams ' . md5( $input ) . '.' . $outputFormats['image'];
+		$fileName = 'Diagrams_' . md5( $input ) . '.' . $outputFormats['image'];
 		$graphFile = $diagramsRepo->findFile( $fileName );
 		if ( !$graphFile ) {
 			$graphFile = $diagramsRepo->newFile( $fileName );
 		}
 
-		if ( $graphFile->exists() ) {
-			return $this->getHtml( $graphFile );
+		$repoFilepath = $diagramsRepo->getZonePath( 'public' ) . '/' . $fileName;
+		if ( $diagramsRepo->fileExists( $repoFilepath ) ) {
+			return $this->getHtml( $graphFile->getUrl() );
 		}
 
 		$tmpFactory = MediaWikiServices::getInstance()->getTempFSFileFactory();
@@ -111,7 +113,7 @@ class Diagrams {
 
 		$mapData = isset( $tmpOutFiles['map'] ) ? file_get_contents( $tmpOutFiles['map']->getPath() ) : null;
 		return !$status->isGood()
-			? $this->formatError( $status->getHTML() )
+			? $this->formatError( Parser::stripOuterParagraph( $status->getHTML() ) )
 			: $this->getHtml( $graphFile->getUrl(), $mapData );
 	}
 
