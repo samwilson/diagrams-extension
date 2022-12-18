@@ -5,6 +5,7 @@ namespace MediaWiki\Extension\Diagrams;
 use Config;
 use Html;
 use MediaWiki\Hook\ParserFirstCallInitHook;
+use MediaWiki\Shell\CommandFactory;
 use Parser;
 use PPFrame;
 
@@ -13,11 +14,16 @@ class Hooks implements ParserFirstCallInitHook {
 	/** @var Config */
 	private $config;
 
+	/** @var CommandFactory */
+	private $commandFactory;
+
 	/**
 	 * @param Config $config
+	 * @param CommandFactory $commandFactory
 	 */
-	public function __construct( Config $config ) {
+	public function __construct( Config $config, CommandFactory $commandFactory ) {
 		$this->config = $config;
+		$this->commandFactory = $commandFactory;
 	}
 
 	/**
@@ -27,7 +33,7 @@ class Hooks implements ParserFirstCallInitHook {
 	public function onParserFirstCallInit( $parser ) {
 		$parserOptions = $parser->getOptions();
 		$isPreview = $parserOptions ? $parserOptions->getIsPreview() : false;
-		$diagrams = new Diagrams( $isPreview );
+		$diagrams = new Diagrams( $isPreview, $this->commandFactory );
 		$renderMethod = $this->config->get( 'DiagramsServiceUrl' )
 			? 'renderWithService'
 			: 'renderLocally';

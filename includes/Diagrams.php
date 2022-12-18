@@ -6,9 +6,8 @@ use Html;
 use Http;
 use LocalRepo;
 use MediaWiki\MediaWikiServices;
-use MediaWiki\Shell\Result;
-use MediaWiki\Shell\Shell;
-use Shellbox\Command\UnboxedResult;
+use MediaWiki\Shell\CommandFactory;
+use Shellbox\Command\BoxedResult;
 use TempFSFile;
 
 class Diagrams {
@@ -18,9 +17,11 @@ class Diagrams {
 
 	/**
 	 * @param bool $isPreview
+	 * @param CommandFactory $commandFactory
 	 */
-	public function __construct( bool $isPreview ) {
+	public function __construct( bool $isPreview, CommandFactory $commandFactory ) {
 		$this->isPreview = $isPreview;
+		$this->commandFactory = $commandFactory;
 	}
 
 	/**
@@ -119,7 +120,7 @@ class Diagrams {
 	 * @param string $outputFormat
 	 * @param string $inputFilename
 	 * @param string $outputFilename
-	 * @return Result|UnboxedResult
+	 * @return BoxedResult
 	 */
 	private function runCommand( $commandName, $outputFormat, $inputFilename, $outputFilename ) {
 		if ( $commandName === 'plantuml' ) {
@@ -127,9 +128,13 @@ class Diagrams {
 		} else {
 			$cmdArgs = [ '-T', $outputFormat, '-o', $outputFilename ];
 		}
-		$cmd = Shell::command( array_merge( [ $commandName ], $cmdArgs, [ $inputFilename ] ) );
-		$cmd->restrict( Shell::RESTRICT_DEFAULT | Shell::NO_NETWORK );
-		return $cmd->execute();
+		return $this->commandFactory
+			->createBoxed( 'diagrams' )
+			->disableNetwork()
+			->firejailDefaultSeccomp()
+			->routeName( 'diagrams-' . $commandName )
+			->params( array_merge( [ $commandName ], $cmdArgs, [ $inputFilename ] ) )
+			->execute();
 	}
 
 	/**
