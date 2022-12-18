@@ -10,7 +10,7 @@
 	"descriptionmsg": "diagrams-desc",
 	"license-name": "GPL-3.0-or-later",
 	"requires": {
-		"MediaWiki": ">= 1.34.0, <= 1.39"
+		"MediaWiki": ">= 1.34.0, <= 1.40"
 	},
 	"AutoloadNamespaces": {
 		"MediaWiki\\Extension\\Diagrams\\": "includes/"
@@ -28,7 +28,8 @@
 		"main": {
 			"class": "MediaWiki\\Extension\\Diagrams\\Hooks",
 			"services": [
-				"MainConfig"
+				"MainConfig",
+				"ShellCommandFactory"
 			]
 		}
 	},
