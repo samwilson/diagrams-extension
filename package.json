@@ -1,14 +1,15 @@
 {
 	"private": true,
 	"scripts": {
-		"test": "grunt test"
+		"lint:js": "eslint --cache .",
+		"lint:css": "stylelint --allow-empty-input '**/*.less'",
+		"lint:i18n": "banana-checker i18n/",
+		"test": "npm -s run lint:css && npm -s run lint:js && npm -s run lint:i18n"
 	},
 	"devDependencies": {
 		"eslint-config-wikimedia": "0.23.0",
 		"grunt": "1.5.3",
 		"grunt-banana-checker": "0.10.0",
-		"grunt-eslint": "24.0.0",
-		"grunt-stylelint": "0.18.0",
 		"stylelint-config-wikimedia": "0.13.1"
 	},
 	"eslintIgnore": [
