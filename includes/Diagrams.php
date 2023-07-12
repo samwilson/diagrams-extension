@@ -66,55 +66,71 @@ class Diagrams {
 			$outputFormats['map'] = $commandName === 'mscgen' ? 'ismap' : 'cmapx';
 		}
 
-		$fileName = 'Diagrams_' . md5( $input ) . '.' . $outputFormats['image'];
-		$graphFile = $diagramsRepo->findFile( $fileName );
-		if ( !$graphFile ) {
-			$graphFile = $diagramsRepo->newFile( $fileName );
-		}
-
-		$repoFilepath = $diagramsRepo->getZonePath( 'public' ) . '/' . $fileName;
-		if ( $diagramsRepo->fileExists( $repoFilepath ) ) {
-			return $this->getHtml( $graphFile->getUrl() );
-		}
-
-		$tmpFactory = MediaWikiServices::getInstance()->getTempFSFileFactory();
-		$tmpGraphSourceFile = $tmpFactory->newTempFSFile( 'diagrams_in', $commandName );
-
-		// Render image and map files.
-		$mapData = null;
-		$tmpOutFiles = [];
+		// Create File objects for each of the target output formats.
+		$files = [];
+		$fileNameBase = 'Diagrams_' . md5( $input ) . '.';
 		foreach ( $outputFormats as $outputType => $outputFormat ) {
-			if ( $commandName === 'plantuml' ) {
-				// Determine plantuml output file via input file because we can only
-				// specify the output directory and not a specific file.
-				$info = pathinfo( $tmpGraphSourceFile->getPath() );
-				$outputPath = $info['dirname'] . '/' . $info['filename'] . '.' . $outputFormat;
-				$tmpOutFiles[$outputType] = new TempFSFile( $outputPath );
-				$input = "@startuml\n$input\n@enduml";
-			} else {
-				$tmpOutFiles[$outputType] = $tmpFactory->newTempFSFile( 'diagrams_out_', $outputFormat );
+			$fileName = $fileNameBase . $outputFormat;
+			$file = $diagramsRepo->findFile( $fileName );
+			if ( !$file ) {
+				$file = $diagramsRepo->newFile( $fileName );
 			}
-			file_put_contents( $tmpGraphSourceFile->getPath(), $input );
-			$result = $this->runCommand(
-				$commandName,
-				$outputFormat,
-				$tmpGraphSourceFile->getPath(),
-				$tmpOutFiles[$outputType]->getPath()
-			);
-			if ( $result->getExitCode() !== 0 ) {
-				$errorMessage = $result->getStderr() ?? $result->getStdout();
-				return $this->formatError( wfMessage( 'diagrams-error-generic', $commandName ) . ' ' . $errorMessage );
+			$files[$outputType] = $file;
+		}
+
+		// Render image and map files if they don't already exist.
+		$mapData = null;
+		$repoFilepath = $diagramsRepo->getZonePath( 'public' ) . '/' . $fileNameBase;
+		if ( !$diagramsRepo->fileExists( $repoFilepath . $outputFormats['image'] ) ) {
+			$tmpFactory = MediaWikiServices::getInstance()->getTempFSFileFactory();
+			$tmpGraphSourceFile = $tmpFactory->newTempFSFile( 'diagrams_in', $commandName );
+			$tmpOutFiles = [];
+			foreach ( $outputFormats as $outputType => $outputFormat ) {
+				if ( $commandName === 'plantuml' ) {
+					// Determine plantuml output file via input file because we can only
+					// specify the output directory and not a specific file.
+					$info = pathinfo( $tmpGraphSourceFile->getPath() );
+					$outputPath = $info['dirname'] . '/' . $info['filename'] . '.' . $outputFormat;
+					$tmpOutFiles[$outputType] = new TempFSFile( $outputPath );
+					$input = "@startuml\n$input\n@enduml";
+				} else {
+					$tmpOutFiles[$outputType] = $tmpFactory->newTempFSFile( 'diagrams_out_', $outputFormat );
+				}
+				file_put_contents( $tmpGraphSourceFile->getPath(), $input );
+				$result = $this->runCommand(
+					$commandName,
+					$outputFormat,
+					$tmpGraphSourceFile->getPath(),
+					$tmpOutFiles[$outputType]->getPath()
+				);
+				if ( $result->getExitCode() !== 0 ) {
+					$errorMessage = wfMessage( 'diagrams-error-generic', $commandName )
+						. ' ' . $result->getStderr() ?? $result->getStdout();
+					return $this->formatError( $errorMessage );
+				}
+				$status = $this->isPreview
+					? $diagramsRepo->storeTemp( $fileNameBase . $outputFormat, $tmpOutFiles[$outputType] )
+					: $files[$outputType]->publish( $tmpOutFiles[$outputType] );
+				if ( !$status->isGood() ) {
+					$this->formatError( Parser::stripOuterParagraph( $status->getHTML() ) );
+				}
+				if ( $outputFormat === 'ismap' ) {
+					// Store for previews so the data doesn't have to be fetched again below.
+					$mapData = file_get_contents( $tmpOutFiles[$outputType]->getPath() );
+				}
 			}
 		}
 
-		$status = $this->isPreview
-			? $diagramsRepo->storeTemp( $fileName, $tmpOutFiles['image'] )
-			: $graphFile->publish( $tmpOutFiles['image'] );
-
-		$mapData = isset( $tmpOutFiles['map'] ) ? file_get_contents( $tmpOutFiles['map']->getPath() ) : null;
-		return !$status->isGood()
-			? $this->formatError( Parser::stripOuterParagraph( $status->getHTML() ) )
-			: $this->getHtml( $graphFile->getUrl(), $mapData );
+		// Get the stored image map data, if applicable.
+		$ismapUrl = null;
+		if ( $diagramsRepo->fileExists( $repoFilepath . $outputFormats['map'] ) ) {
+			if ( $outputFormats['map'] === 'ismap' ) {
+				$ismapUrl = $files['map']->getUrl();
+			} elseif ( !$mapData ) {
+				$mapData = file_get_contents( $files['map']->getFullUrl() );
+			}
+		}
+		return $this->getHtml( $files['image']->geturl(), $mapData, $ismapUrl );
 	}
 
 	/**
