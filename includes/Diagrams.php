@@ -16,6 +16,9 @@ class Diagrams {
 	/** @var bool */
 	private $isPreview;
 
+	/** @var CommandFactory */
+	private $commandFactory;
+
 	/**
 	 * @param bool $isPreview
 	 * @param CommandFactory $commandFactory
@@ -23,6 +26,13 @@ class Diagrams {
 	public function __construct( bool $isPreview, CommandFactory $commandFactory ) {
 		$this->isPreview = $isPreview;
 		$this->commandFactory = $commandFactory;
+	}
+
+	/**
+	 * @param bool $isPreview
+	 */
+	public function setIsPreview( bool $isPreview ): void {
+		$this->isPreview = $isPreview;
 	}
 
 	/**
@@ -56,6 +66,9 @@ class Diagrams {
 			'zones' => [
 				'public' => [
 					'directory' => '/diagrams',
+				],
+				'temp' => [
+					'directory' => '/diagrams/temp',
 				],
 			],
 		] );
