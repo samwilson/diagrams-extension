@@ -35,12 +35,9 @@ class Diagrams {
 	}
 
 	/**
-	 * @param string $commandName The command to render the graph with.
-	 * @param string $input The graph source.
-	 * @param array $params Parameter to the wikitext tag (caption, format, etc.).
-	 * @return string HTML to display the image and image map.
+	 * @return LocalRepo
 	 */
-	public function renderLocally( string $commandName, string $input, array $params ) {
+	public function getDiagramsRepo(): LocalRepo {
 		$localRepo = MediaWikiServices::getInstance()->getRepoGroup()->getLocalRepo();
 		$diagramsRepo = new LocalRepo( [
 			'class' => 'LocalRepo',
@@ -55,11 +52,21 @@ class Diagrams {
 			'deletedHashLevels' => 0,
 			'zones' => [
 				'public' => [
-					'directory' => '/diagrams',
+					'directory' => 'diagrams',
 				],
 			],
 		] );
+		return $diagramsRepo;
+	}
 
+	/**
+	 * @param string $commandName The command to render the graph with.
+	 * @param string $input The graph source.
+	 * @param array $params Parameter to the wikitext tag (caption, format, etc.).
+	 * @return string HTML to display the image and image map.
+	 */
+	public function renderLocally( string $commandName, string $input, array $params ) {
+		$diagramsRepo = $this->getDiagramsRepo();
 		$outputFormats = [ 'image' => $params['format'] ?? 'png' ];
 		if ( $commandName !== 'plantuml' ) {
 			// Add image map output where it's supported.
