@@ -134,7 +134,7 @@ class Diagrams {
 			if ( $outputFormats['map'] === 'ismap' ) {
 				$ismapUrl = $files['map']->getUrl();
 			} elseif ( !$mapData ) {
-				$mapData = file_get_contents( $files['map']->getFullUrl() );
+				$mapData = file_get_contents( $files['map']->getLocalRefPath() );
 			}
 		}
 		return $this->getHtml( $files['image']->geturl(), $mapData, $ismapUrl );
