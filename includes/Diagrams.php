@@ -16,6 +16,9 @@ class Diagrams {
 	/** @var bool */
 	private $isPreview;
 
+	/** @var CommandFactory */
+	private $commandFactory;
+
 	/**
 	 * @param bool $isPreview
 	 * @param CommandFactory $commandFactory
