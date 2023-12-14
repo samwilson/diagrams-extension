@@ -16,6 +16,9 @@ class Diagrams {
 	/** @var bool */
 	private $isPreview;
 
+	/** @var CommandFactory */
+	private $commandFactory;
+
 	/**
 	 * @param bool $isPreview
 	 * @param CommandFactory $commandFactory
@@ -112,7 +115,7 @@ class Diagrams {
 				);
 				if ( $result->getExitCode() !== 0 ) {
 					$errorMessage = wfMessage( 'diagrams-error-generic', $commandName )
-						. ' ' . $result->getStderr() ?? $result->getStdout();
+						. ' ' . htmlspecialchars( $result->getStderr() ?? $result->getStdout() );
 					return $this->formatError( $errorMessage );
 				}
 				$status = $this->isPreview
