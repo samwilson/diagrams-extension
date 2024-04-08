@@ -3,7 +3,6 @@
 namespace MediaWiki\Extension\Diagrams;
 
 use Html;
-use Http;
 use LocalRepo;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Shell\CommandFactory;
@@ -189,8 +188,9 @@ class Diagrams {
 				'source' => $input,
 			] ),
 		];
-		$result = Http::request( 'POST', $url, $requestParams, __METHOD__ );
-		if ( $result === false ) {
+		$http = MediaWikiServices::getInstance()->getHttpRequestFactory();
+		$result = $http->post( $url, $requestParams, __METHOD__ );
+		if ( $result === null ) {
 			return static::formatError( wfMessage( 'diagrams-error-no-response' ) );
 		}
 		$response = json_decode( $result );
