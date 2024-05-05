@@ -6,6 +6,7 @@ use Html;
 use LocalRepo;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Shell\CommandFactory;
+use MediaWiki\Shell\Result;
 use Parser;
 use Shellbox\Command\BoxedResult;
 use TempFSFile;
@@ -136,7 +137,7 @@ class Diagrams {
 			if ( $outputFormats['map'] === 'ismap' ) {
 				$ismapUrl = $files['map']->getUrl();
 			} elseif ( !$mapData ) {
-				$mapData = file_get_contents( $files['map']->getFullUrl() );
+				$mapData = file_get_contents( $files['map']->getLocalRefPath() );
 			}
 		}
 		return $this->getHtml( $files['image']->geturl(), $mapData, $ismapUrl );
@@ -147,7 +148,7 @@ class Diagrams {
 	 * @param string $outputFormat
 	 * @param string $inputFilename
 	 * @param string $outputFilename
-	 * @return BoxedResult
+	 * @return BoxedResult|Result
 	 */
 	private function runCommand( $commandName, $outputFormat, $inputFilename, $outputFilename ) {
 		if ( $commandName === 'plantuml' ) {
@@ -155,13 +156,19 @@ class Diagrams {
 		} else {
 			$cmdArgs = [ '-T', $outputFormat, '-o', $outputFilename ];
 		}
-		return $this->commandFactory
-			->createBoxed( 'diagrams' )
-			->disableNetwork()
-			->firejailDefaultSeccomp()
-			->routeName( 'diagrams-' . $commandName )
-			->params( array_merge( [ $commandName ], $cmdArgs, [ $inputFilename ] ) )
-			->execute();
+
+		if ( version_compare( MW_VERSION, '1.35', '>' ) ) {
+			return $this->commandFactory->create()
+				->params( array_merge( [ $commandName ], $cmdArgs, [ $inputFilename ] ) )
+				->execute();
+		} else {
+			return $this->commandFactory->createBoxed( 'diagrams' )
+				->disableNetwork()
+				->firejailDefaultSeccomp()
+				->routeName( 'diagrams-' . $commandName )
+				->params( array_merge( [ $commandName ], $cmdArgs, [ $inputFilename ] ) )
+				->execute();
+		}
 	}
 
 	/**
