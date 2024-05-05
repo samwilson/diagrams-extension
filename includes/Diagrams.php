@@ -157,18 +157,17 @@ class Diagrams {
 			$cmdArgs = [ '-T', $outputFormat, '-o', $outputFilename ];
 		}
 
-		if ( version_compare( MW_VERSION, '1.35', '>' ) ) {
-			return $this->commandFactory->create()
-				->params( array_merge( [ $commandName ], $cmdArgs, [ $inputFilename ] ) )
-				->execute();
-		} else {
-			return $this->commandFactory->createBoxed( 'diagrams' )
+		if ( method_exists( $this->commandFactory, 'createBoxed' ) ) {
+			$command = $this->commandFactory->createBoxed( 'diagrams' )
 				->disableNetwork()
 				->firejailDefaultSeccomp()
-				->routeName( 'diagrams-' . $commandName )
-				->params( array_merge( [ $commandName ], $cmdArgs, [ $inputFilename ] ) )
-				->execute();
+				->routeName( 'diagrams-' . $commandName );
+		} else {
+			// @todo Remove after dropping support for MW < 1.36
+			$command = $this->commandFactory->create();
 		}
+		return $command->params( array_merge( [ $commandName ], $cmdArgs, [ $inputFilename ] ) )
+			->execute();
 	}
 
 	/**
