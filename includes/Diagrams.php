@@ -217,6 +217,81 @@ class Diagrams {
 	}
 
 	/**
+	 * Render graphs via kroki service.
+	 * @param string $commandName The command to render the graph with.
+	 * @param string $input The graph source.
+	 * @param array $params Parameter to the wikitext tag (caption, format, etc.).
+	 * @return string HTML to display the image and image map.
+	 */
+	public function renderWithKroki( string $commandName, string $input, array $params ) {
+		$baseUrl = MediaWikiServices::getInstance()->getMainConfig()->get( 'DiagramsKrokiUrl' );
+		$url = trim( $baseUrl, '/' );
+		$format = isset( $params['format'] ) && $params['format'] ? $params['format'] : 'png';
+
+		// For supported options, see https://docs.kroki.io/kroki/setup/diagram-options
+		unset( $params['format'] );
+
+		$requestParams = [
+			'postData' => json_encode( [
+				'diagram_type' => $commandName,
+				'output_format' => $format,
+				'diagram_source' => $input,
+				'diagram_options' =>  $params,
+			], JSON_FORCE_OBJECT ),
+		];
+		$result = Http::request( 'POST', $url, $requestParams, __METHOD__ );
+		if ( $result === false ) {
+			// Kroki returns HTTP Status Code 500, if the diagram_source is invalid
+			return static::formatError( wfMessage( 'diagrams-error-no-response' ) );
+		}
+
+		$localRepo = MediaWikiServices::getInstance()->getRepoGroup()->getLocalRepo();
+		$diagramsRepo = new LocalRepo( [
+			'class' => 'LocalRepo',
+			'name' => 'local',
+			'backend' => $localRepo->getBackend(),
+			'directory' => $localRepo->getZonePath( 'public' ) . '/diagrams',
+			'url' => $localRepo->getZoneUrl( 'public' ) . '/diagrams',
+			'hashLevels' => 0,
+			'thumbUrl' => '',
+			'transformVia404' => false,
+			'deletedDir' => '',
+			'deletedHashLevels' => 0,
+			'zones' => [
+				'public' => [
+					'directory' => '/diagrams',
+				],
+			],
+		] );
+
+		$md5Input = md5( $input );
+		$fileName = 'Diagrams ' . $md5Input . '.' . $outputFormats['image'];
+		$graphFile = $diagramsRepo->findFile( $fileName );
+		if ( !$graphFile ) {
+			$graphFile = $diagramsRepo->newFile( $fileName );
+		}
+
+		if ( $graphFile->exists() ) {
+			return $this->getHtml( $graphFile );
+		}
+
+		$tmpFactory = MediaWikiServices::getInstance()->getTempFSFileFactory();
+		$tmpOutFile = $tmpFactory->newTempFSFile( 'diagrams_out_', $md5Input );
+		file_put_contents( $tmpOutFile->getPath(), $result );
+
+		$status = $this->isPreview
+			? $diagramsRepo->storeTemp( $fileName, $tmpOutFile )
+			: $graphFile->publish( $tmpOutFile );
+
+		$cmapx = $response->diagrams->cmapx->contents ?? null;
+		$ismapUrl = $response->diagrams->ismap->url ?? null;
+
+		return !$status->isGood()
+			? $this->formatError( $status->getHtml() )
+			: $this->getHtml( $graphFile->getUrl() );
+	}
+
+	/**
 	 * Get the full Diagrams HTML output for a given URL and optional map.
 	 * @param string $imgUrl URL to the diagram's image.
 	 * @param string|null $mapData Image map in cmapx or ismap format.

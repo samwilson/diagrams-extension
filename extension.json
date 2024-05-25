@@ -19,6 +19,14 @@
 		"DiagramsServiceUrl": {
 			"description": "URL of the diagram-rendering service. If not provided, graphs will be locally rendered.",
 			"value": ""
+		},
+		"DiagramsKrokiUrl": {
+			"description": "URL of the kroki service. If not provided, graphs will be locally rendered.",
+			"value": ""
+		},
+		"DiagramsUseKroki": {
+			"description": "Enables or disables rendering graphs with Kroki.",
+			"value": false
 		}
 	},
 	"Hooks": {
