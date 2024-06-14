@@ -31,9 +31,7 @@ class Hooks implements ParserFirstCallInitHook {
 	 * @param Parser $parser
 	 */
 	public function onParserFirstCallInit( $parser ) {
-		$parserOptions = $parser->getOptions();
-		$isPreview = $parserOptions ? $parserOptions->getIsPreview() : false;
-		$diagrams = new Diagrams( $isPreview, $this->commandFactory );
+		$commandFactory = $this->commandFactory;
 		$renderMethod = $this->config->get( 'DiagramsServiceUrl' )
 			? 'renderWithService'
 			: 'renderLocally';
@@ -41,13 +39,15 @@ class Hooks implements ParserFirstCallInitHook {
 			$parser->setHook( $tag, static function (
 				string $input, array $params, Parser $parser, PPFrame $frame
 			) use (
-				$tag, $diagrams, $renderMethod
+				$tag, $commandFactory, $renderMethod
 			) {
 				// Make sure there's something to render.
 				$input = trim( $input );
 				if ( $input === '' ) {
 					return '';
 				}
+				$isPreview = $parser->getOptions() && $parser->getOptions()->getIsPreview();
+				$diagrams = new Diagrams( $isPreview, $commandFactory );
 				if ( $tag === 'graphviz' ) {
 					// GraphViz.
 					$dot = new Dot( $input );

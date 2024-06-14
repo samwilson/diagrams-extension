@@ -29,6 +29,13 @@ class Diagrams {
 	}
 
 	/**
+	 * @param bool $isPreview
+	 */
+	public function setIsPreview( bool $isPreview ): void {
+		$this->isPreview = $isPreview;
+	}
+
+	/**
 	 * Get HTML for an error message.
 	 * @param string $error Error message. May contain HTML.
 	 * @return string
@@ -56,6 +63,9 @@ class Diagrams {
 			'zones' => [
 				'public' => [
 					'directory' => 'diagrams',
+				],
+				'temp' => [
+					'directory' => '/diagrams/temp',
 				],
 			],
 		] );
