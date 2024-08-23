@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Youri van den Bogert"
+		]
+	},
+	"diagrams-extensionname": "Diagrams",
+	"diagrams-desc": "Render Graphviz-, Mscgen- en PlantUML-diagrammen in wikipagina's.",
+	"diagrams-error-no-response": "Diagramfout: geen antwoord ontvangen van de externe service.",
+	"diagrams-error-image-not-found": "Afbeelding niet gevonden: $1",
+	"diagrams-error-returned-0": "Diagramservicefout:",
+	"diagrams-error-bad-format": "Diagramservicefout: het formaat '$1' werd niet teruggestuurd.",
+	"diagrams-error-generic": "Diagramfout (met $1 opdracht):"
+}
