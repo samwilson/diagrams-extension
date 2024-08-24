@@ -23,7 +23,7 @@ class DeleteOldDiagramsFiles extends Maintenance {
 
 	public function execute(): void {
 		$services = MediaWikiServices::getInstance();
-		$diagrams = new Diagrams( false, $services->getShellCommandFactory() );
+		$diagrams = new Diagrams( false, $services->getShellCommandFactory(), $this->getConfig() );
 		$repo = $diagrams->getDiagramsRepo();
 		$deletedCount = 0;
 		$ttl = $this->getOption( 'ttl', 30 ) * 60 * 60 * 24;
