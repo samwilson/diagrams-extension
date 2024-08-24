@@ -75,6 +75,11 @@ class Diagrams {
 	 * @return string HTML to display the image and image map.
 	 */
 	public function renderLocally( string $commandName, string $input, array $params ) {
+		$localCommands = $this->config->get( 'DiagramsLocalCommands' );
+		if ( !isset( $localCommands[ $commandName ] ) ) {
+			return $this->formatError( wfMessage( 'diagrams-error-wrong-command', $commandName ) );
+		}
+
 		$diagramsRepo = $this->getDiagramsRepo();
 		$outputFormats = [ 'image' => $params['format'] ?? 'png' ];
 		if ( $commandName !== 'plantuml' ) {
@@ -109,16 +114,18 @@ class Diagrams {
 					$outputPath = $info['dirname'] . '/' . $info['filename'] . '.' . $outputFormat;
 					$tmpOutFiles[$outputType] = new TempFSFile( $outputPath );
 					$input = "@startuml\n$input\n@enduml";
+					$cmdArgs = [ "-t$outputFormat", '-output', dirname( $tmpOutFiles[$outputType]->getPath() ) ];
 				} else {
 					$tmpOutFiles[$outputType] = $tmpFactory->newTempFSFile( 'diagrams_out_', $outputFormat );
+					$cmdArgs = [ '-T', $outputFormat, '-o', $tmpOutFiles[$outputType]->getPath() ];
 				}
 				file_put_contents( $tmpGraphSourceFile->getPath(), $input );
-				$result = $this->runCommand(
-					$commandName,
-					$outputFormat,
-					$tmpGraphSourceFile->getPath(),
-					$tmpOutFiles[$outputType]->getPath()
+				$commandParts = array_merge(
+					explode( ' ', $localCommands[ $commandName ] ),
+					$cmdArgs,
+					[ $tmpGraphSourceFile->getPath() ]
 				);
+				$result = $this->runCommand( $commandName, $commandParts );
 				if ( $result->getExitCode() !== 0 ) {
 					$errorMessage = wfMessage( 'diagrams-error-generic', $commandName )
 						. ' ' . htmlspecialchars( $result->getStderr() ?? $result->getStdout() );
@@ -151,22 +158,10 @@ class Diagrams {
 
 	/**
 	 * @param string $commandName
-	 * @param string $outputFormat
-	 * @param string $inputFilename
-	 * @param string $outputFilename
+	 * @param string[] $commandParts
 	 * @return BoxedResult|Result
 	 */
-	private function runCommand( $commandName, $outputFormat, $inputFilename, $outputFilename ) {
-		$localCommands = $this->config->get( 'DiagramsLocalCommands' );
-		$cmd = isset( $localCommands[ $commandName ] )
-			? explode( ' ', $localCommands[ $commandName ] )
-			: [ $commandName ];
-		if ( $commandName === 'plantuml' ) {
-			$cmdArgs = [ "-t$outputFormat", '-output', dirname( $outputFilename ) ];
-		} else {
-			$cmdArgs = [ '-T', $outputFormat, '-o', $outputFilename ];
-		}
-
+	private function runCommand( $commandName, $commandParts ) {
 		if ( method_exists( $this->commandFactory, 'createBoxed' ) ) {
 			$command = $this->commandFactory->createBoxed( 'diagrams' )
 				->disableNetwork()
@@ -176,7 +171,7 @@ class Diagrams {
 			// @todo Remove after dropping support for MW < 1.36
 			$command = $this->commandFactory->create();
 		}
-		return $command->params( array_merge( $cmd, $cmdArgs, [ $inputFilename ] ) )
+		return $command->params( $commandParts )
 			->execute();
 	}
 

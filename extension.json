@@ -23,9 +23,15 @@
 		"DiagramsLocalCommands": {
 			"description": "Command to run for each local rendering tool.",
 			"value": {
-				"dot": "dot",
 				"mscgen": "mscgen",
-				"plantuml": "plantuml"
+				"plantuml": "plantuml",
+				"dot": "dot",
+				"neato": "neato",
+				"fdp": "fdp",
+				"sfdp": "sfdp",
+				"circo": "circo",
+				"twopi": "twopi",
+				"osage": "osage"
 			}
 		}
 	},
