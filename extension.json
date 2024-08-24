@@ -19,6 +19,14 @@
 		"DiagramsServiceUrl": {
 			"description": "URL of the diagram-rendering service. If not provided, graphs will be locally rendered.",
 			"value": ""
+		},
+		"DiagramsLocalCommands": {
+			"description": "Command to run for each local rendering tool.",
+			"value": {
+				"dot": "dot",
+				"mscgen": "mscgen",
+				"plantuml": "plantuml"
+			}
 		}
 	},
 	"Hooks": {

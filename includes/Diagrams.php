@@ -4,6 +4,7 @@ namespace MediaWiki\Extension\Diagrams;
 
 use Html;
 use LocalRepo;
+use MediaWiki\Config\Config;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Shell\CommandFactory;
 use MediaWiki\Shell\Result;
@@ -19,13 +20,18 @@ class Diagrams {
 	/** @var CommandFactory */
 	private $commandFactory;
 
+	/** @var Config */
+	private $config;
+
 	/**
 	 * @param bool $isPreview
 	 * @param CommandFactory $commandFactory
+	 * @param Config $config
 	 */
-	public function __construct( bool $isPreview, CommandFactory $commandFactory ) {
+	public function __construct( bool $isPreview, CommandFactory $commandFactory, Config $config ) {
 		$this->isPreview = $isPreview;
 		$this->commandFactory = $commandFactory;
+		$this->config = $config;
 	}
 
 	/**
@@ -133,7 +139,7 @@ class Diagrams {
 
 		// Get the stored image map data, if applicable.
 		$ismapUrl = null;
-		if ( $diagramsRepo->fileExists( $repoFilepath . $outputFormats['map'] ) ) {
+		if ( isset( $outputFormats['map'] ) && $diagramsRepo->fileExists( $repoFilepath . $outputFormats['map'] ) ) {
 			if ( $outputFormats['map'] === 'ismap' ) {
 				$ismapUrl = $files['map']->getUrl();
 			} elseif ( !$mapData ) {
@@ -151,6 +157,10 @@ class Diagrams {
 	 * @return BoxedResult|Result
 	 */
 	private function runCommand( $commandName, $outputFormat, $inputFilename, $outputFilename ) {
+		$localCommands = $this->config->get( 'DiagramsLocalCommands' );
+		$cmd = isset( $localCommands[ $commandName ] )
+			? explode( ' ', $localCommands[ $commandName ] )
+			: [ $commandName ];
 		if ( $commandName === 'plantuml' ) {
 			$cmdArgs = [ "-t$outputFormat", '-output', dirname( $outputFilename ) ];
 		} else {
@@ -166,7 +176,7 @@ class Diagrams {
 			// @todo Remove after dropping support for MW < 1.36
 			$command = $this->commandFactory->create();
 		}
-		return $command->params( array_merge( [ $commandName ], $cmdArgs, [ $inputFilename ] ) )
+		return $command->params( array_merge( $cmd, $cmdArgs, [ $inputFilename ] ) )
 			->execute();
 	}
 
