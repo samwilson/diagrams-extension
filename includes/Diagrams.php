@@ -2,9 +2,9 @@
 
 namespace MediaWiki\Extension\Diagrams;
 
+use Config;
 use Html;
 use LocalRepo;
-use MediaWiki\Config\Config;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Shell\CommandFactory;
 use MediaWiki\Shell\Result;
