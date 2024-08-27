@@ -113,7 +113,8 @@ class Diagrams {
 					$info = pathinfo( $tmpGraphSourceFile->getPath() );
 					$outputPath = $info['dirname'] . '/' . $info['filename'] . '.' . $outputFormat;
 					$tmpOutFiles[$outputType] = new TempFSFile( $outputPath );
-					$input = "@startuml\n$input\n@enduml";
+					$type = $params['type'] ?? 'uml';
+					$input = "@start$type\n$input\n@end$type";
 					$cmdArgs = [ "-t$outputFormat", '-output', dirname( $tmpOutFiles[$outputType]->getPath() ) ];
 				} else {
 					$tmpOutFiles[$outputType] = $tmpFactory->newTempFSFile( 'diagrams_out_', $outputFormat );
