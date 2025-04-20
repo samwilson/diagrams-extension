@@ -2,9 +2,9 @@
 
 namespace MediaWiki\Extension\Diagrams;
 
-use Config;
-use Html;
+use MediaWiki\Config\Config;
 use MediaWiki\Hook\ParserFirstCallInitHook;
+use MediaWiki\Html\Html;
 use MediaWiki\Shell\CommandFactory;
 use Parser;
 use PPFrame;

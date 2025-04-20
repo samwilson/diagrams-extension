@@ -7,8 +7,8 @@ namespace MediaWiki\Extension\Diagrams;
 
 use DOMDocument;
 use DOMXPath;
-use Html;
-use Title;
+use MediaWiki\Html\Html;
+use MediaWiki\Title\Title;
 
 /**
  * This class represents an HTML image-map, modifying it where required to support MediaWiki
