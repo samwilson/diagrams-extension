@@ -2,8 +2,8 @@
 
 namespace MediaWiki\Extension\Diagrams;
 
-use Config;
-use Html;
+use MediaWiki\Config\Config;
+use MediaWiki\Html\Html;
 use MediaWiki\Hook\ParserFirstCallInitHook;
 use MediaWiki\Shell\CommandFactory;
 use Parser;
