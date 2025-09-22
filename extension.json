@@ -10,7 +10,7 @@
 	"descriptionmsg": "diagrams-desc",
 	"license-name": "GPL-3.0-or-later",
 	"requires": {
-		"MediaWiki": ">= 1.40.0, < 1.45"
+		"MediaWiki": ">= 1.40.0, < 1.46"
 	},
 	"AutoloadNamespaces": {
 		"MediaWiki\\Extension\\Diagrams\\": "includes/"
@@ -64,5 +64,6 @@
 		"localBasePath": "",
 		"remoteExtPath": "Diagrams"
 	},
+	"ForeignResourcesDir": "resources/foreign",
 	"manifest_version": 2
 }
