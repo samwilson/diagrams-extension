@@ -1,0 +1,21 @@
+{
+    "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
+    "bomFormat": "CycloneDX",
+    "specVersion": "1.6",
+    "serialNumber": "urn:uuid:2fb6400e-8a92-4bf3-ae23-285843a195bf",
+    "version": 1,
+    "components": [
+        {
+            "type": "library",
+            "name": "mermaid",
+            "version": "9.1.1",
+            "licenses": [
+                {
+                    "license": {
+                        "id": "MIT"
+                    }
+                }
+            ]
+        }
+    ]
+}
