@@ -4,3 +4,4 @@ mermaid:
   version: 9.1.1
   src: https://unpkg.com/mermaid@9.1.1/dist/mermaid.min.js
   integrity: sha384-6qzFcd+IG/OgXej451KTI/pbrex++8tdIfKsNF+gDVx1gfkmIG7z+uIIspvxAP7u
+  homepage: https://mermaid.js.org/
