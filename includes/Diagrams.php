@@ -89,7 +89,7 @@ class Diagrams {
 
 		// Create File objects for each of the target output formats.
 		$files = [];
-		$fileNameBase = 'Diagrams_' . md5( $input ) . '.';
+		$fileNameBase = 'Diagrams_' . md5( $commandName . $input ) . '.';
 		foreach ( $outputFormats as $outputType => $outputFormat ) {
 			$fileName = $fileNameBase . $outputFormat;
 			$file = $diagramsRepo->findFile( $fileName );
