@@ -5,8 +5,8 @@
 	"author": [
 		"[https://samwilson.id.au/ Sam Wilson]"
 	],
-	"version": "0.14.0",
-	"url": "https://www.mediawiki.org/wiki/Extension:Diagrams",
+	"version": "0.15.3",
+	"url": "https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:Diagrams",
 	"descriptionmsg": "diagrams-desc",
 	"license-name": "GPL-3.0-or-later",
 	"requires": {
