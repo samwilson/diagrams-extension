@@ -12,7 +12,6 @@
 		const setSvg = ( svgCode ) => {
 			mermaidEl.innerHTML = svgCode;
 		};
-		mermaidInner.textContent = mermaidInner.textContent.replace(/^\s*[\r\n]/gm, "");
-		mermaid.mermaidAPI.render( mermaidInner.id, mermaidInner.textContent, setSvg );
+		mermaid.mermaidAPI.render( mermaidInner.id, mermaidInner.textContent.trim(), setSvg );
 	} );
 }() );
