@@ -12,6 +12,6 @@
 		const setSvg = ( svgCode ) => {
 			mermaidEl.innerHTML = svgCode;
 		};
-		mermaid.mermaidAPI.render( mermaidInner.id, mermaidInner.textContent, setSvg );
+		mermaid.mermaidAPI.render( mermaidInner.id, mermaidInner.textContent.trim(), setSvg );
 	} );
 }() );
