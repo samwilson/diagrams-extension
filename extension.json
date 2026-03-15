@@ -33,6 +33,10 @@
 				"twopi": "twopi",
 				"osage": "osage"
 			}
+		},
+		"DiagramsDefaultFormat": {
+			"description": "Default output file format, used when the 'format' attribute is not given.",
+			"value": "png"
 		}
 	},
 	"Hooks": {

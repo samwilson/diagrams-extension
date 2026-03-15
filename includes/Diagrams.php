@@ -81,7 +81,7 @@ class Diagrams {
 		}
 
 		$diagramsRepo = $this->getDiagramsRepo();
-		$outputFormats = [ 'image' => $params['format'] ?? 'png' ];
+		$outputFormats = [ 'image' => $params['format'] ];
 		if ( $commandName !== 'plantuml' ) {
 			// Add image map output where it's supported.
 			$outputFormats['map'] = $commandName === 'mscgen' ? 'ismap' : 'cmapx';
@@ -186,7 +186,7 @@ class Diagrams {
 	public function renderWithService( string $commandName, string $input, array $params ) {
 		$baseUrl = MediaWikiServices::getInstance()->getMainConfig()->get( 'DiagramsServiceUrl' );
 		$url = trim( $baseUrl, '/' ) . '/render';
-		$format = isset( $params['format'] ) && $params['format'] ? $params['format'] : 'png';
+		$format = $params['format'];
 		$mapFormat = null;
 		if ( $commandName !== 'plantuml' ) {
 			// Add image map output where it's supported.

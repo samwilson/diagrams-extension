@@ -37,17 +37,21 @@ class Hooks implements ParserFirstCallInitHook {
 		$renderMethod = $this->config->get( 'DiagramsServiceUrl' )
 			? 'renderWithService'
 			: 'renderLocally';
+		$config = $this->config;
 		foreach ( [ 'graphviz', 'mscgen', 'uml', 'mermaid' ] as $tag ) {
 			$parser->setHook( $tag, static function (
 				string $input, array $params, Parser $parser, PPFrame $frame
 			) use (
-				$tag, $diagrams, $renderMethod
+				$tag, $diagrams, $renderMethod, $config
 			) {
 				// Make sure there's something to render.
 				$input = trim( $input );
 				if ( $input === '' ) {
 					return '';
 				}
+				$params['format'] = isset( $params['format'] ) && $params['format']
+					? $params['format']
+					: $config->get( 'DiagramsDefaultFormat' );
 				if ( $tag === 'graphviz' ) {
 					// GraphViz.
 					$dot = new Dot( $input );
