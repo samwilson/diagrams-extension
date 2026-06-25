@@ -81,7 +81,7 @@ class Diagrams {
 		}
 
 		$diagramsRepo = $this->getDiagramsRepo();
-		$outputFormats = [ 'image' => $params['format'] ];
+		$outputFormats = [ 'image' => $params['format']];
 		if ( $commandName !== 'plantuml' ) {
 			// Add image map output where it's supported.
 			$outputFormats['map'] = $commandName === 'mscgen' ? 'ismap' : 'cmapx';
@@ -256,7 +256,16 @@ class Diagrams {
 			);
 		} else {
 			// No image map.
-			$out = Html::element( 'img', $imgAttrs );
+			if ( str_ends_with( $imgUrl, ".svg" ) ) {
+				// using <object> here instead of <img> to allow URLs inside SVGs to be clicked
+				$out = Html::rawElement( 'a', [ 'href' => $imgUrl ],
+					Html::rawElement( 'object', [ 'data' => $imgUrl ] )
+				);
+			} else {
+				$out = Html::rawElement( 'a', [ 'href' => $imgUrl ],
+					Html::element( 'img', $imgAttrs )
+				);
+			}
 		}
 		return Html::rawElement( 'div', [ 'class' => 'ext-diagrams' ], $out );
 	}
