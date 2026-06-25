@@ -80,6 +80,19 @@ class Diagrams {
 			return $this->formatError( wfMessage( 'diagrams-error-wrong-command', $commandName ) );
 		}
 
+		if ( $commandName === 'plantuml' ) {
+		$lines = explode( "\n", $input );
+			if ( count($lines) === 0 || !str_starts_with( $lines[0], "@startuml" ) ) {
+				array_unshift( $lines, "@startuml" );
+				array_push( $lines, "@enduml" );
+			} elseif ( count($lines) > 0 && str_starts_with( $lines[0], "@startuml" ) ) {
+				// remove any trailing text after @startuml. this is allowed PlantUML syntax, but this extension cannot handle that.
+				$lines[0] = "@startuml";
+			}
+			$input = implode( "\n", $lines );
+			// for debugging: return "<pre>\n" . $input . "\n" . "</pre>\n";
+		}
+
 		$diagramsRepo = $this->getDiagramsRepo();
 		$outputFormats = [ 'image' => $params['format']];
 		if ( $commandName !== 'plantuml' ) {
@@ -114,7 +127,6 @@ class Diagrams {
 					$outputPath = $info['dirname'] . '/' . $info['filename'] . '.' . $outputFormat;
 					$tmpOutFiles[$outputType] = new TempFSFile( $outputPath );
 					$type = $params['type'] ?? 'uml';
-					$input = "@start$type\n$input\n@end$type";
 					$cmdArgs = [ "-t$outputFormat", '-output', dirname( $tmpOutFiles[$outputType]->getPath() ) ];
 				} else {
 					$tmpOutFiles[$outputType] = $tmpFactory->newTempFSFile( 'diagrams_out_', $outputFormat );
