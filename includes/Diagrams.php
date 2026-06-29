@@ -80,6 +80,18 @@ class Diagrams {
 			return $this->formatError( wfMessage( 'diagrams-error-wrong-command', $commandName ) );
 		}
 
+		if ( $commandName === 'plantuml' ) {
+		$lines = explode( "\n", $input );
+			if ( count($lines) === 0 || !str_starts_with( $lines[0], "@startuml" ) ) {
+				array_unshift( $lines, "@startuml" );
+				array_push( $lines, "@enduml" );
+			} elseif ( count($lines) > 0 && str_starts_with( $lines[0], "@startuml" ) ) {
+				// remove any trailing text after @startuml. this is allowed PlantUML syntax, but this extension cannot handle that.
+				$lines[0] = "@startuml";
+			}
+			$input = implode( "\n", $lines );
+		}
+
 		$diagramsRepo = $this->getDiagramsRepo();
 		$outputFormats = [ 'image' => $params['format'] ];
 		if ( $commandName !== 'plantuml' ) {
@@ -114,7 +126,6 @@ class Diagrams {
 					$outputPath = $info['dirname'] . '/' . $info['filename'] . '.' . $outputFormat;
 					$tmpOutFiles[$outputType] = new TempFSFile( $outputPath );
 					$type = $params['type'] ?? 'uml';
-					$input = "@start$type\n$input\n@end$type";
 					$cmdArgs = [ "-t$outputFormat", '-output', dirname( $tmpOutFiles[$outputType]->getPath() ) ];
 				} else {
 					$tmpOutFiles[$outputType] = $tmpFactory->newTempFSFile( 'diagrams_out_', $outputFormat );
@@ -256,7 +267,16 @@ class Diagrams {
 			);
 		} else {
 			// No image map.
-			$out = Html::element( 'img', $imgAttrs );
+			if ( str_ends_with( $imgUrl, ".svg" ) ) {
+				// using <object> here instead of <img> to allow URLs inside SVGs to be clicked
+				$out = Html::rawElement( 'a', [ 'href' => $imgUrl ],
+					Html::rawElement( 'object', [ 'data' => $imgUrl ] )
+				);
+			} else {
+				$out = Html::rawElement( 'a', [ 'href' => $imgUrl ],
+					Html::element( 'img', $imgAttrs )
+				);
+			}
 		}
 		return Html::rawElement( 'div', [ 'class' => 'ext-diagrams' ], $out );
 	}
