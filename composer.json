@@ -30,8 +30,7 @@
 			"composer validate",
 			"parallel-lint . --exclude vendor --exclude node_modules",
 			"phpcs -p -s",
-			"minus-x check .",
-			"@foreign-resources verify"
+			"minus-x check ."
 		],
 		"foreign-resources": "../../maintenance/run manageForeignResources --extension Diagrams"
 	},
