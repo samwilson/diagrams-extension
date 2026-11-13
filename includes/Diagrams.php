@@ -225,15 +225,15 @@ class Diagrams {
 	/**
 	 * Get the full Diagrams HTML output for a given URL and optional map.
 	 * @param string $imgUrl URL to the diagram's image.
-	 * @param string|null $mapData Image map in cmapx or ismap format.
-	 * @param string|null $ismapUrl The URL to the ismap file to use. Only used
+	 * @param ?string $mapData Image map in cmapx or ismap format.
+	 * @param ?string $ismapUrl The URL to the ismap file to use. Only used
 	 * if $mapData is not given.
 	 * @return string
 	 */
 	private function getHtml(
 		string $imgUrl,
-		string $mapData = null,
-		string $ismapUrl = null
+		?string $mapData = null,
+		?string $ismapUrl = null
 	): string {
 		$imgAttrs = [ 'src' => $imgUrl ];
 		if ( $mapData ) {
