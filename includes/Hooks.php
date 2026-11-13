@@ -75,4 +75,28 @@ class Hooks implements ParserFirstCallInitHook {
 			} );
 		}
 	}
+
+	/**
+	 * Hack Mermaid to export rather than setting the global.
+	 *
+	 * @return string JS source for the mermaid.min.js virtual ResourceLoader file.
+	 */
+	public static function getMermaidJsSource(): string {
+		$source = file_get_contents( dirname( __DIR__ ) . '/resources/foreign/mermaid/mermaid.min.js' );
+
+		// Patch the global to be the default export.
+		$patched = preg_replace(
+			'/globalThis\["mermaid"\]\s*=\s*globalThis\.__esbuild_esm_mermaid_nm\["mermaid"\]\.default;?\s*$/',
+			'module.exports=__esbuild_esm_mermaid_nm["mermaid"].default;',
+			$source,
+			1,
+			$count
+		);
+		if ( $patched === null || $count !== 1 ) {
+			throw new \RuntimeException( 'Mermaid footer not found.' );
+		}
+
+		// Tell ResourceLoader to not re-minify it.
+		return '/*@nomin*/' . $patched;
+	}
 }

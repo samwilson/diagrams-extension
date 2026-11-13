@@ -1,5 +1,5 @@
 ( function () {
-	const mermaid = require( './foreign/mermaid/mermaid.min.js' );
+	const mermaid = require( './mermaid.min.js' );
 
 	mermaid.mermaidAPI.initialize( { startOnLoad: false } );
 
@@ -9,9 +9,9 @@
 		const mermaidInner = mermaidEl.firstElementChild;
 		mermaidInner.id = 'ext-diagrams-mermaid-' + i;
 		i++;
-		const setSvg = ( svgCode ) => {
-			mermaidEl.innerHTML = svgCode;
-		};
-		mermaid.mermaidAPI.render( mermaidInner.id, mermaidInner.textContent.trim(), setSvg );
+		mermaid.mermaidAPI.render( mermaidInner.id, mermaidInner.textContent.trim() )
+			.then( ( svgResult ) => {
+				mermaidEl.innerHTML = svgResult.svg;
+			} );
 	} );
 }() );

@@ -1,7 +1,7 @@
 mermaid:
   license: MIT
   type: file
-  version: 9.1.1
-  src: https://unpkg.com/mermaid@9.1.1/dist/mermaid.min.js
-  integrity: sha384-6qzFcd+IG/OgXej451KTI/pbrex++8tdIfKsNF+gDVx1gfkmIG7z+uIIspvxAP7u
+  version: 12.3.0
+  src: https://cdn.jsdelivr.net/npm/mermaid@12.3.0/dist/mermaid.min.js
+  integrity: sha384-HHW54r639fK42Ip0coGF3mz8oSiGn0eEoWNTLs75X7H63pLSDBa0Tqs0RwGmLlXE
   homepage: https://mermaid.js.org/
