@@ -60,6 +60,14 @@
 		"ext.diagrams.mermaid": {
 			"packageFiles": [
 				"resources/mermaid.js",
+				{
+					"name": "resources/mermaid.min.js",
+					"callback": "MediaWiki\\Extension\\Diagrams\\Hooks::getMermaidJsSource"
+				}
+			]
+		},
+		"ext.diagrams.mermaid.foreign": {
+			"packageFiles": [
 				"resources/foreign/mermaid/mermaid.min.js"
 			]
 		}
